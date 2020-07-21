@@ -1,0 +1,677 @@
+define("participate-text-editor/adapters/-ember-m3",["exports","global-utils/utils/headers","ember-cli-pemberly-m3","ember-cli-pemberly-m3/migrate","data-layer/recipes","participate-text-editor/adapters/application"],function(e,t,i,n,r,a){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+var o=a.default.extend(n.AdapterPemberlyM3Mixin,{_schema:Ember.inject.service("m3-schema"),globalHttpHeaders:Ember.inject.service("global-services@global-http-headers"),pemTracking:Ember.inject.service("pem-tracking"),headers:Ember.computed("currentRequestType","requestNormalized","globalHttpHeaders",(function(){var e=(0,t.default)(this.currentRequestType,this.requestNormalized,this.globalHttpHeaders.getGlobalHeaders())
+e.Accept="application/vnd.linkedin.normalized+json+2.1"
+return e})).volatile(),init:function(){this._super.apply(this,arguments)
+this.recipes=(0,i.normalizeKeys)(r.default)},normalizeErrorResponse:function(){var e,t=this._super.apply(this,arguments);(e=this.pemTracking).annotateNormalizedErrorResponse.apply(e,Array.prototype.slice.call(arguments).concat([t]))
+return t},findRecord:function(){var e,t=this._super.apply(this,arguments)
+return(e=this.pemTracking).trackFindRecord.apply(e,[t].concat(Array.prototype.slice.call(arguments)))},createRecord:function(){var e,t=this._super.apply(this,arguments)
+return(e=this.pemTracking).trackCreateRecord.apply(e,[t].concat(Array.prototype.slice.call(arguments)))},updateRecord:function(){var e,t=this._super.apply(this,arguments)
+return(e=this.pemTracking).trackUpdateRecord.apply(e,[t].concat(Array.prototype.slice.call(arguments)))},deleteRecord:function(){var e,t=this._super.apply(this,arguments)
+return(e=this.pemTracking).trackDeleteRecord.apply(e,[t].concat(Array.prototype.slice.call(arguments)))},batchGet:function(){var e,t=this._super.apply(this,arguments)
+return(e=this.pemTracking).trackBatchGet.apply(e,[t].concat(Array.prototype.slice.call(arguments)))},queryURL:function(){var e,t=this._super.apply(this,arguments)
+return(e=this.pemTracking).trackQueryURL.apply(e,[t].concat(Array.prototype.slice.call(arguments)))}})
+e.default=o})
+define.alias("data-layer/adapters/application","participate-text-editor/adapters/application")
+define.alias("artdeco-button/components/artdeco-button","participate-text-editor/components/artdeco-button")
+define.alias("artdeco-modal/components/artdeco-confirmation-dialog","participate-text-editor/components/artdeco-confirmation-dialog")
+define.alias("artdeco-dropdown/components/artdeco-dropdown-content","participate-text-editor/components/artdeco-dropdown-content")
+define.alias("artdeco-dropdown/components/artdeco-dropdown-header","participate-text-editor/components/artdeco-dropdown-header")
+define.alias("artdeco-dropdown/components/artdeco-dropdown-item","participate-text-editor/components/artdeco-dropdown-item")
+define.alias("artdeco-dropdown/components/artdeco-dropdown-trigger","participate-text-editor/components/artdeco-dropdown-trigger")
+define.alias("artdeco-dropdown/components/artdeco-dropdown","participate-text-editor/components/artdeco-dropdown")
+define.alias("artdeco-modal/components/container","participate-text-editor/components/artdeco-modal-container")
+define.alias("artdeco-modal/components/artdeco-modal-content","participate-text-editor/components/artdeco-modal-content")
+define.alias("artdeco-modal/components/artdeco-modal-footer","participate-text-editor/components/artdeco-modal-footer")
+define.alias("artdeco-modal/components/artdeco-modal-header","participate-text-editor/components/artdeco-modal-header")
+define.alias("artdeco-modal/components/artdeco-modal","participate-text-editor/components/artdeco-modal")
+define.alias("ember-vector-images/components/custom-image","participate-text-editor/components/custom-image")
+define.alias("ember-wormhole/components/ember-wormhole","participate-text-editor/components/ember-wormhole")
+define.alias("ember-vector-images/components/lazy-background","participate-text-editor/components/lazy-background")
+define.alias("ember-vector-images/components/lazy-image","participate-text-editor/components/lazy-image")
+define.alias("artdeco-icons-web/components/linkedin-logo","participate-text-editor/components/linkedin-logo")
+define("participate-text-editor/components/text-editor-container",["exports","participate-text-editor/templates/components/text-editor-container"],function(e,t){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+var i=Ember.Component.extend({layout:t.default,tagName:""})
+e.default=i})
+define("participate-text-editor/components/text-editor",["exports","@babel/runtime/helpers/esm/defineProperty","participate-text-editor/templates/components/text-editor","ember-diff-attrs","global-utils/utils/keyboard-utils","participate-text-editor/utils/constants","participate-text-editor/utils/text-editor-utils","participate-text-editor/utils/editor-setup","global-utils/utils/is-browser","participate-text-editor/utils/quill/utils","participate-text-editor/utils/quill/delta-model-transformers","global-utils/utils/url","ember-lifeline","participate-text-editor/utils/tracking/texteditor-tracking","ember-cli-pemberly-tracking/utils/tracking","participate-text-editor/utils/tracking/mentions-tracking","participate-text-editor/utils/tracking/hashtag-tracking"],function(e,t,i,n,r,a,o,s,l,c,u,d,h,p,f,m,g){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+var y=Ember.Component.extend({layout:i.default,classNames:["editor-container"],a11yNotification:Ember.inject.service("global-services@a11y-notification"),authenticatedUser:Ember.inject.service("authentication@authenticated-user"),tracking:Ember.inject.service("tracking"),editor:null,highlightedElContainer:null,shouldFocusOnRender:!1,shareMediaUrns:Ember.computed("shareMediaUrn",(function(){return this.shareMediaUrn?[this.shareMediaUrn]:[]})),didReceiveAttrs:(0,n.default)("ariaActiveId","disabled",(function(e){for(var t=arguments.length,i=new Array(t>1?t-1:0),n=1;n<t;n++)i[n-1]=arguments[n]
+this._super.apply(this,i)
+if(e){"ariaActiveId"in e&&this._setActiveDescendent(this.ariaActiveId)
+"disabled"in e&&this.editor.enable(!this.disabled)}})),didInsertElement:function(){var e=this
+if(l.default){var t=(0,s.setupQuillEditor)(this.element,(function(){return!e.isDestroying&&e.dropDownIsActive}),this.placeholder,(function(t){return(0,h.debounceTask)(e,"_handleReportedTextChanges",t,300)}),this._openTypeahead.bind(this),this._dismissTypeaheadType.bind(this),this._generateNewWorkflowId.bind(this),this._fireCustomTexteditorTrackingEvent.bind(this),this._fireControlInteractionEvent.bind(this),this.tracking.generateControlUrn(this.associatedInputControlUrn),this.associatedEntityUrn,this.controlType,this.rootObject,this.updateMetadata,this.shouldFocusOnRender)
+Ember.set(this,"editor",t)
+Ember.set(this,"editorElement",this.element.querySelector(a.QUILL_EDITOR_SELECTOR))
+this.initialContent&&this._appendTextAndMentions(this.initialContent,this.cursorRange)
+this.disabled&&this.editor.disable()
+Ember.tryInvoke(this,"setInsertContentHandler",[this._insertContent.bind(this)])
+Ember.tryInvoke(this,"setResetEditorHandler",[this._resetEditor.bind(this)])}},recommendedMentionExistsInResultsList:Ember.computed("typeaheadResults","recommendedMention",(function(){var e=this.recommendedMention
+return e?this.typeaheadResults.filter((function(t){return Ember.get(t,"objectUrn")===Ember.get(e,"objectUrn")}))[0]:null})),filteredResults:Ember.computed("typeaheadResults","shouldShowRecommendedMention","recommendedMention","recommendedMentionExistsInResultsList",(function(){var e=this.recommendedMentionExistsInResultsList,t=this.typeaheadResults.filter((function(e){return!["ESCAPE_HATCH","AUTO_COMPLETE"].includes(Ember.get(e,"type"))}))
+if(e){t.removeObject(e)
+t.unshiftObject(e)
+return t}if(this.shouldShowRecommendedMention){t.unshiftObject(this.recommendedMention)
+return t}return t})),shouldShowRecommendedMention:Ember.computed("recommendedMention","showRecommendedMentionActor",(function(){return this.recommendedMention&&this.showRecommendedMentionActor})),isTypeaheadAbleToExpand:Ember.computed("hashtagShouldOpen","mentionShouldOpen",(function(){return this.hashtagShouldOpen||this.mentionShouldOpen})).readOnly(),texteditorTracker:Ember.computed("workflowId","tracking",(function(){return new p.default(this.tracking,this.workflowId)})),dropDownIsActive:Ember.computed("activeDescendantId","isTypeaheadAbleToExpand",(function(){return this.isTypeaheadAbleToExpand&&Ember.isPresent(this.activeDescendantId)})).readOnly(),_dismissTypeaheadWithoutSelection:function(){this.isDestroying||Ember.tryInvoke(this,"onDismissWithoutSelection",[this.typeaheadQuery])},_generateNewWorkflowId:function(){Ember.set(this,"workflowId",(0,f.generateTrackingId)())},_setActiveDescendent:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:null
+Ember.set(this,"activeDescendantId",e)
+e?Ember.getWithDefault(this,"editorElement",this.element.querySelector(a.QUILL_EDITOR_SELECTOR)).setAttribute("aria-activedescendant",e):Ember.getWithDefault(this,"editorElement",this.element.querySelector(a.QUILL_EDITOR_SELECTOR)).removeAttribute("aria-activedescendant")},_insertContent:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},t=arguments.length>1&&void 0!==arguments[1]&&arguments[1]
+t?this._insertTextAtCursor(e.text):this._appendTextAndMentions(e)},_resetEditor:function(){var e=arguments.length>0&&void 0!==arguments[0]&&arguments[0],t=this.editor
+t.setContents([])
+e&&t.history.clear()},_insertTextAtCursor:function(e){if(e){var t=this.editor,i=t.getSelection(!0).index,n=void 0===i?0:i,r=t.getText(),a=e
+n>0&&!/\s/.test(r[n-1])&&(a=" ".concat(a));["#","＃"].includes(e)||/\s/.test(a[a.length-1])||(a="".concat(a," "))
+t.insertText(n,a,"user")
+t.setSelection(n+a.length,0)}},_appendTextAndMentions:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},i=this.editor,n=e.text,r=e.mentions
+if(n||r){var a=(0,u.deltaFromTextMentionsObject)(e),o=i.getContents(0,i.getLength()-1)
+i.setContents(o.concat(a))
+var s=t.startCursor,l=void 0===s?i.getLength():s,c=t.endCursor,d=void 0===c?0:c
+i.setSelection(l,d)}},_handleReportedTextChanges:function(e){if(e){var t=(0,u.deltaToTextMentionsObject)(e),i=t.mentions,n=t.text,r=(0,d.getUrlsFromText)(n)
+r.length&&Ember.tryInvoke(this,"onFoundUrl",[r[0]])
+Ember.tryInvoke(this,"updateCharCount",[n.length])
+Ember.tryInvoke(this,"textChangeHandler",[i,n])}},_handleArrowKey:function(e,t){e.preventDefault()
+Ember.tryInvoke(this,"arrowKeyPressed",[t])},_addRecommendedMentionToResultsList:function(e){var t=Ember.get(this,"recommendedMention.text.text"),i=t&&(0,o.mentionQueryMatchesRecommendedMention)(t,e)
+Ember.set(this,"showRecommendedMentionActor",i)},_openTypeahead:function(e){var i=e.typeaheadQuery,n=e.onTypeaheadSelect,r=e.typeaheadType,a=e.onDismissWithoutSelection
+if(!l.default||this.element.contains(document.activeElement)){var o=this.editor
+Ember.set(this,"typeaheadType",r)
+if(o){var s
+Ember.setProperties(this,(s={typeaheadQuery:i,onTypeaheadSelect:n,onDismissWithoutSelection:a},(0,t.default)(s,"".concat(r,"ShouldOpen"),!0),(0,t.default)(s,"commentary",o.getText()),(0,t.default)(s,"typeaheadTopPosition",this._calculateTypeaheadTopOffset()),s))
+this._addRecommendedMentionToResultsList(i)}}},focusOut:function(e){var t=e.relatedTarget
+if(!this.element.contains(t)){this._dismissTypeaheadWithoutSelection()
+this._closeTypeahead()}},focusIn:function(){Ember.tryInvoke(this,"onEditorFocus")},_fireControlInteractionEvent:function(e){this.tracking.fireInteractionEvent(e)},_fireCustomTexteditorTrackingEvent:function(e,t,i){this.texteditorTracker.fireTrackingEvent(e,t,i)},_dismissTypeaheadType:function(e){if(!this.isDestroying){if(this.typeaheadPopulatedwithType===e){this._dismissTypeaheadWithoutSelection()
+Ember.set(this,"typeaheadPopulatedwithType",null)}Ember.setProperties(this,(0,t.default)({},"".concat(e,"ShouldOpen"),!1))
+this.isTypeaheadAbleToExpand||this._closeTypeahead()}},_closeTypeahead:function(){if(!this.isDestroying){Ember.setProperties(this,{mentionShouldOpen:!1,hashtagShouldOpen:!1,typeaheadPopulatedwithType:null,typeaheadQuery:null})
+this._setActiveDescendent()
+Ember.getWithDefault(this,"editorElement",this.element.querySelector(a.QUILL_EDITOR_SELECTOR)).removeAttribute("aria-owns")}},_calculateTypeaheadTopOffset:function(){var e=this.editor,t=(e.getSelection()||{}).index,i=void 0===t?0:t,n=e.getBounds(i),r=n.top,a=n.height
+return this.element.offsetTop+r+a*Ember.getWithDefault(this,"lineHeightOffSet",1.2)},keyUp:function(e){if(this.typeaheadPopulatedwithType&&(0,r.isEscapeKey)(e)){e.stopPropagation()
+this._dismissTypeaheadWithoutSelection()
+this._closeTypeahead()}},keyDown:function(e){if(this.typeaheadPopulatedwithType){if((0,r.isDownArrowKey)(e))this._handleArrowKey(e,a.KEY_DOWN)
+else if((0,r.isUpArrowKey)(e))this._handleArrowKey(e,a.KEY_UP)
+else if((0,r.isTabKey)(e)){this._dismissTypeaheadWithoutSelection()
+this._closeTypeahead()}else if((0,r.isEnterKey)(e))if(this.dropDownIsActive){e.preventDefault()
+Ember.tryInvoke(this,"enterKeyPressed")}else{this._dismissTypeaheadWithoutSelection()
+this._closeTypeahead()}}else if((0,r.isEnterKey)(e)&&this.submitOnEnterKey){var t=(0,u.deltaToTextMentionsObject)(Ember.get(this,"editor").getContents()),i=t.text,n=t.mentions
+Ember.tryInvoke(this,"onSubmitComment",[i,n])}},_getFormattedMentionsResults:function(e){var t=[]
+e.forEach((function(e,i){var n={entityUrn:Ember.get(e,"objectUrn"),position:{index:i},isCacheHit:!1}
+t.push(n)}))
+return t},_getFormattedHashtagResults:function(e){var t=[]
+e.forEach((function(e,i){var n={entityUrn:Ember.get(e,"objectUrn"),position:{index:i},trackingId:Ember.get(e,"trackingId")}
+t.push(n)}))
+return t},_trackTypeaheadRenderedImpressionsSetup:function(e){switch(this.typeaheadType){case a.TYPEAHEAD_TYPES_MAP.MENTION:var t={searchHeader:(0,m.getSearchHeaderForMentionsTrackingEvent)(this.typeaheadQuery),results:this._getFormattedMentionsResults(e)}
+this._fireCustomTexteditorTrackingEvent("MentionSuggestionImpressionEvent",t,a.TYPEAHEAD_TYPES_MAP.MENTION)
+break
+case a.TYPEAHEAD_TYPES_MAP.HASHTAG:var i={searchHeader:(0,g.getSearchHeaderForHashtagTrackingEvent)(this.typeaheadQuery),results:this._getFormattedHashtagResults(e),hashtagSourceType:"TYPEAHEAD"}
+this._fireCustomTexteditorTrackingEvent("HashtagSuggestionImpressionEvent",i,a.TYPEAHEAD_TYPES_MAP.HASHTAG)}},actions:{transformTypeaheadResponse:function(e){if(e.length){Ember.set(this,"typeaheadResults",e)
+return this.filteredResults}return e},typeaheadSelect:function(e,t){this._closeTypeahead()
+var i=this.typeheadResultsList.indexOf(t),n=(0,c.normalizeTypeaheadResponse)(t)
+Ember.tryInvoke(this,"onTypeaheadSelect",[n,i])},onTypeaheadResultsRendered:function(e){if(this.element&&!Ember.isEmpty(e)){var t=this.element.querySelector(".editor-typeahead-fetch")
+t&&(t.style.top="".concat(this.typeaheadTopPosition,"px"))
+this._setActiveDescendent()
+Ember.setProperties(this,{typeaheadPopulatedwithType:this.typeaheadType,typeheadResultsList:e})
+Ember.getWithDefault(this,"editorElement",this.element.querySelector(a.QUILL_EDITOR_SELECTOR)).setAttribute("aria-owns",this.triggeredContentId)
+this._trackTypeaheadRenderedImpressionsSetup(e)}},onEditorDragover:function(e){e.preventDefault()
+return!1}}})
+e.default=y})
+define("participate-text-editor/components/typeahead-fetch",["exports","participate-text-editor/templates/components/typeahead-fetch"],function(e,t){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+var i=Ember.Component.extend({layout:t.default,classNames:["editor-typeahead-fetch"],"data-test-editor-typeahead-fetch":!0})
+e.default=i})
+define("participate-text-editor/config/environment",["exports"],function(e){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+var t
+try{var i=document.querySelector('meta[name="participate-text-editor/config/environment"]').getAttribute("content")
+t=JSON.parse(unescape(i))}catch(r){t={}}var n=t
+e.default=n})
+define.alias("ember-m3/adapters/interop-debug-adapter","participate-text-editor/data-adapter")
+define.alias("ember-cli-pemberly-i18n/helpers/bidi-dir","participate-text-editor/helpers/bidi-dir")
+define.alias("ember-cli-pemberly-i18n/helpers/format-currency","participate-text-editor/helpers/format-currency")
+define.alias("ember-cli-pemberly-i18n/helpers/format-date","participate-text-editor/helpers/format-date")
+define.alias("ember-cli-pemberly-i18n/helpers/format-name","participate-text-editor/helpers/format-name")
+define.alias("ember-cli-pemberly-i18n/helpers/format-number","participate-text-editor/helpers/format-number")
+define.alias("ember-cli-pemberly-i18n/helpers/format-time","participate-text-editor/helpers/format-time")
+define.alias("ember-cli-pemberly-i18n/helpers/format-truncate","participate-text-editor/helpers/format-truncate")
+define.alias("ember-cli-pemberly-i18n/helpers/is-any-locale","participate-text-editor/helpers/is-any-locale")
+define.alias("ember-cli-pemberly-i18n/helpers/is-cjk-language","participate-text-editor/helpers/is-cjk-language")
+define.alias("ember-cli-pemberly-i18n/helpers/is-rtl-content","participate-text-editor/helpers/is-rtl-content")
+define.alias("ember-cli-pemberly-i18n/helpers/is-rtl-language","participate-text-editor/helpers/is-rtl-language")
+define.alias("artdeco-icons-web/helpers/li-icon","participate-text-editor/helpers/li-icon")
+define.alias("ember-cli-pemberly-i18n/helpers/t-link-to","participate-text-editor/helpers/t-link-to")
+define.alias("ember-cli-pemberly-i18n/helpers/t-make-name","participate-text-editor/helpers/t-make-name")
+define.alias("ember-cli-pemberly-i18n/helpers/t","participate-text-editor/helpers/t")
+define("participate-text-editor/initializers/artdeco",["exports","artdeco-eyeglass"],function(e,t){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.initialize=r
+e.default=void 0
+var i=[t.default.contextClasses,t.default.floatingLabel,t.default.focusOutline]
+function n(e,t){var n=e[t]
+e[t]=function(){i.forEach((function(e){return e&&"function"==typeof e.teardown&&e.teardown()}))
+n&&"function"==typeof n&&n.call(e)}}function r(e){if("undefined"!=typeof document){i.forEach((function(e){return e.install()}))
+"function"==typeof e.willDestroy?n(e,"willDestroy"):"function"==typeof e.destroy&&n(e,"destroy")}}var a={name:"artdeco",initialize:r}
+e.default=a})
+define.alias("ember-cli-pemberly-i18n/initializers/i18n","participate-text-editor/initializers/i18n")
+define("participate-text-editor/initializers/icons",["exports","artdeco-icons-web/src/icons","participate-text-editor/config/environment"],function(e,t,i){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+function n(e){throw e}var r={name:"icons",initialize:function(){var e,r,a=i.default.environment,o=i.default.APP
+if(o){e=o.artdecoCustomSpriteUrl
+r=o.artdecoCustomSpriteName}var s="test"!==a
+t.default.load(s,e,r).catch(n)}}
+e.default=r})
+define.alias("ember-m3/initializers/m3-store","participate-text-editor/initializers/m3-store")
+define("participate-text-editor/instance-initializers/-t-link-to",["exports","ember-stdlib/utils/is-browser"],function(e,t){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.initialize=i
+e.default=void 0
+function i(e){t.default&&e.lookup("service:-t-link-to")}var n={name:"-t-link-to",initialize:i}
+e.default=n})
+define.alias("data-layer/recipes","participate-text-editor/recipes")
+define("participate-text-editor/serializers/application",["exports","ember-cli-pemberly-m3"],function(e,t){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+var i=t.PemberlyM3Serializer.extend({init:function(){this._super.apply(this,arguments)
+this.packagePrefix="com.linkedin.voyager."}})
+e.default=i})
+define.alias("ember-cli-pemberly-i18n/services/-t-link-to","participate-text-editor/services/-t-link-to")
+define.alias("artdeco-modal/services/artdeco-modal","participate-text-editor/services/artdeco-modal")
+define.alias("ember-cli-pemberly-i18n/services/formatter","participate-text-editor/services/formatter")
+define.alias("ember-cli-pemberly-i18n/services/i18n","participate-text-editor/services/i18n")
+define.alias("@linkedin/ember-pem/services/internal-pem-tracking","participate-text-editor/services/internal-pem-tracking")
+define.alias("ember-cli-pemberly-i18n/services/locale","participate-text-editor/services/locale")
+define.alias("ember-m3/services/m3-schema-manager","participate-text-editor/services/m3-schema-manager")
+define.alias("data-layer/services/m3-schema","participate-text-editor/services/m3-schema")
+define.alias("@linkedin/ember-pem/services/pem-tracking","participate-text-editor/services/pem-tracking")
+define.alias("data-layer/services/prefetch","participate-text-editor/services/prefetch")
+define.alias("ember-cli-pemberly-m3/services/store","participate-text-editor/services/store")
+define("participate-text-editor/templates/components/text-editor-container",["exports"],function(e){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+var t=Ember.HTMLBars.template({id:"vxpya+BV",block:'{"symbols":["typeahead"],"statements":[[4,"basic-typeahead@basic-typeahead",null,[["alwaysExpanded"],[true]],{"statements":[[0,"  "],[1,[28,"participate-text-editor@text-editor",null,[["triggered-content","arrowKeyPressed","enterKeyPressed","triggeredContentId","ariaActiveId","placeholder","controlName","jumpLinkTarget","groupIdForMentionsTypeahead","textChangeHandler","onFoundUrl","updateCharCount","editorWrapperOffsetFromTop","initialContent","cursorRange","setInsertContentHandler","setResetEditorHandler","associatedInputControlUrn","controlType","associatedEntityUrn","rootObject","updateMetadata","recommendedMention","lineHeightOffSet","shouldFocusOnRender","disabled","onEditorFocus","submitOnEnterKey","onSubmitComment"],[[23,1,["triggered-content"]],[23,1,["arrowKeyPressed"]],[23,1,["enterKeyPressed"]],[23,1,["triggeredContentId"]],[23,1,["ariaActiveId"]],[23,0,["placeholder"]],[23,0,["controlName"]],[23,0,["jumpLinkTarget"]],[23,0,["groupIdForMentionsTypeahead"]],[23,0,["textChangeHandler"]],[23,0,["onFoundUrl"]],[23,0,["updateCharCount"]],[23,0,["offsetFromTop"]],[23,0,["initialContent"]],[23,0,["cursorRange"]],[23,0,["setInsertContentHandler"]],[23,0,["setResetEditorHandler"]],[23,0,["associatedInputControlUrn"]],[23,0,["controlType"]],[23,0,["associatedEntityUrn"]],[23,0,["rootObject"]],[23,0,["updateMetadata"]],[23,0,["recommendedMention"]],[23,0,["lineHeightOffSet"]],[23,0,["shouldFocusOnRender"]],[23,0,["disabled"]],[23,0,["onEditorFocus"]],[23,0,["submitOnEnterKey"]],[23,0,["onSubmitComment"]]]]],false],[0,"\\n\\n"]],"parameters":[1]},null]],"hasEval":false}',meta:{moduleName:"participate-text-editor/templates/components/text-editor-container.hbs"}})
+e.default=t})
+define("participate-text-editor/templates/components/text-editor",["exports"],function(e){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+var t=Ember.HTMLBars.template({id:"zDFqiBVc",block:'{"symbols":["queryFunction"],"statements":[[7,"div",true],[10,"class","editor-content"],[11,"data-control-name",[23,0,["controlName"]]],[11,"onfocus",[23,0,["onEditorFocus"]]],[11,"ondragover",[28,"action",[[23,0,[]],"onEditorDragover"],null]],[11,"data-jump-link-target",[23,0,["jumpLinkTarget"]]],[8],[0,"\\n"],[9],[0,"\\n\\n"],[4,"if",[[23,0,["isTypeaheadAbleToExpand"]]],null,{"statements":[[4,"let",[[28,"if",[[23,0,["mentionShouldOpen"]],[28,"if",[[23,0,["groupIdForMentionsTypeahead"]],[28,"search-ta-kit@fetch-results",null,[["transform","queryContext","type","useCase"],[[28,"action",[[23,0,[]],"transformTypeaheadResponse"],null],[28,"hash",null,[["groupId"],[[23,0,["groupIdForMentionsTypeahead"]]]]],"GROUP_MEMBERS","MENTIONS"]]],[28,"search-ta-kit@fetch-results",null,[["transform","useCase"],[[28,"action",[[23,0,[]],"transformTypeaheadResponse"],null],"MENTIONS"]]]],null],[28,"search-ta-kit@fetch-hashtag-recommendations",null,[["commentary","urns"],[[23,0,["commentary"]],[23,0,["shareMediaUrns"]]]]]],null]],null,{"statements":[[0,"    "],[1,[28,"participate-text-editor@typeahead-fetch",null,[["fetchFn","typeaheadQuery","onTypeaheadResultsRendered","typeaheadSelect","triggered-content"],[[23,1,[]],[23,0,["typeaheadQuery"]],[28,"action",[[23,0,[]],"onTypeaheadResultsRendered"],null],[28,"action",[[23,0,[]],"typeaheadSelect"],null],[23,0,["triggered-content"]]]]],false],[0,"\\n"]],"parameters":[1]},null]],"parameters":[]},null]],"hasEval":false}',meta:{moduleName:"participate-text-editor/templates/components/text-editor.hbs"}})
+e.default=t})
+define("participate-text-editor/templates/components/typeahead-fetch",["exports"],function(e){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+var t=Ember.HTMLBars.template({id:"3smcSbyd",block:'{"symbols":["results","content","result"],"statements":[[4,"basic-typeahead@ta-fetch",null,[["keywords","onFetchResolve","fetchFn"],[[23,0,["typeaheadQuery"]],[23,0,["onTypeaheadResultsRendered"]],[23,0,["fetchFn"]]]],{"statements":[[4,"if",[[23,1,[]]],null,{"statements":[[4,"component",[[28,"ember-holy-futuristic-template-namespacing-batman@-translate-dynamic-2",[[23,0,["triggered-content"]]],null]],[["className"],["editor-typeahead__typeahead-tray"]],{"statements":[[4,"each",[[23,1,[]]],null,{"statements":[[4,"component",[[28,"-assert-implicit-component-helper-argument",[[23,2,["selectable"]],"expected `content.selectable` to be a contextual component but found a string. Did you mean `(component content.selectable)`? (\'participate-text-editor/templates/components/typeahead-fetch.hbs\' @ L11:C11) "],null]],[["class","keywordsValue","onSelect","value"],["editor-typeahead__typeahead-item",[23,3,["text","text"]],[23,0,["typeaheadSelect"]],[23,3,[]]]],{"statements":[[0,"          "],[1,[28,"search-ta-kit@typeahead-result",null,[["hit"],[[23,3,[]]]]],false],[0,"\\n"]],"parameters":[]},null]],"parameters":[3]},null]],"parameters":[2]},null]],"parameters":[]},null]],"parameters":[1]},null]],"hasEval":false}',meta:{moduleName:"participate-text-editor/templates/components/typeahead-fetch.hbs"}})
+e.default=t})
+define("participate-text-editor/utils/constants",["exports"],function(e){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.TYPEAHEAD_TYPES_MAP=e.BLOT_WHITELIST=e.KEY_DOWN=e.KEY_RIGHT=e.KEY_UP=e.KEY_LEFT=e.QUILL_EDITOR_SELECTOR=e.QUILL_CONTAINER_SELECTOR=void 0
+e.QUILL_CONTAINER_SELECTOR=".editor-content"
+e.QUILL_EDITOR_SELECTOR=".ql-editor"
+e.KEY_LEFT="Left"
+e.KEY_UP="Up"
+e.KEY_RIGHT="Right"
+e.KEY_DOWN="Down"
+var t=new Set(["hashtag","mention","guard"])
+e.BLOT_WHITELIST=t
+e.TYPEAHEAD_TYPES_MAP={MENTION:"mention",HASHTAG:"hashtag"}})
+define("participate-text-editor/utils/editor-setup",["exports","participate-text-editor/utils/constants","participate-text-editor/utils/quill/modules/hashtag","participate-text-editor/utils/quill/modules/mention","quill","participate-text-editor/utils/quill/quill-keyboard-bindings"],function(e,t,i,n,r,a){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.setupQuillEditor=function(e,i,n,s,l,c,u,d,h,p,f,m,g,y,v){var T={"typeahead enter":{key:"enter",handler:function(){return!i()}}},b=Object.assign({},a.enterKeyBinding,T),E=new r.default(e.querySelector("".concat(t.QUILL_CONTAINER_SELECTOR)),{placeholder:n,formats:["hashtag","mention","guard","bold"],modules:{mention:{actions:{openTypeahead:l,closeTypeahead:c,generateNewWorkflowId:u,fireCustomTexteditorTrackingEvent:d,fireControlInteractionEvent:h},trackingData:{associatedInputControlUrn:p,associatedEntityUrn:f,controlType:m,rootObject:g,updateMetadata:y}},hashtag:{actions:{openTypeahead:l,closeTypeahead:c,generateNewWorkflowId:u,fireCustomTexteditorTrackingEvent:d,fireControlInteractionEvent:h},trackingData:{associatedInputControlUrn:p,controlType:m}},keyboard:{bindings:b},history:{delay:50,maxStack:300}}})
+delete E.getModule("keyboard").bindings[o.keys.TAB]
+var x=E.container.querySelector(t.QUILL_EDITOR_SELECTOR)
+x.setAttribute("aria-placeholder",n)
+x.setAttribute("aria-label",n)
+x.setAttribute("role","textbox")
+x.setAttribute("aria-multiline",!0)
+x.setAttribute("data-test-ql-editor-contenteditable",!0)
+s&&E.on("text-change",(function(){s(E.getContents())}))
+v&&E.focus()
+return E}
+r.default.register({"modules/mention":n.default,"modules/hashtag":i.default})
+var o=r.default.import("modules/keyboard")})
+define("participate-text-editor/utils/quill/blots/hashtag",["exports","@babel/runtime/helpers/esm/classCallCheck","@babel/runtime/helpers/esm/inherits","@babel/runtime/helpers/esm/possibleConstructorReturn","@babel/runtime/helpers/esm/getPrototypeOf","quill"],function(e,t,i,n,r,a){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+function o(e){var t=(function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1
+if(Reflect.construct.sham)return!1
+if("function"==typeof Proxy)return!0
+try{Date.prototype.toString.call(Reflect.construct(Date,[],(function(){})))
+return!0}catch(e){return!1}})()
+return function(){var i,a=(0,r.default)(e)
+if(t){var o=(0,r.default)(this).constructor
+i=Reflect.construct(a,arguments,o)}else i=a.apply(this,arguments)
+return(0,n.default)(this,i)}}var s=(function(e){(0,i.default)(r,e)
+var n=o(r)
+function r(){(0,t.default)(this,r)
+return n.apply(this,arguments)}return r})(a.default.import("blots/inline"))
+s.className="ql-hashtag"
+s.tagName="strong"
+s.blotName="hashtag"
+var l=s
+e.default=l})
+define("participate-text-editor/utils/quill/blots/mention",["exports","@babel/runtime/helpers/esm/slicedToArray","@babel/runtime/helpers/esm/toConsumableArray","@babel/runtime/helpers/esm/classCallCheck","@babel/runtime/helpers/esm/createClass","@babel/runtime/helpers/esm/get","@babel/runtime/helpers/esm/inherits","@babel/runtime/helpers/esm/possibleConstructorReturn","@babel/runtime/helpers/esm/getPrototypeOf","quill","participate-text-editor/utils/quill/mention-utils"],function(e,t,i,n,r,a,o,s,l,c,u){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+function d(e){var t=(function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1
+if(Reflect.construct.sham)return!1
+if("function"==typeof Proxy)return!0
+try{Date.prototype.toString.call(Reflect.construct(Date,[],(function(){})))
+return!0}catch(e){return!1}})()
+return function(){var i,n=(0,l.default)(e)
+if(t){var r=(0,l.default)(this).constructor
+i=Reflect.construct(n,arguments,r)}else i=n.apply(this,arguments)
+return(0,s.default)(this,i)}}var h=c.default.import("blots/inline"),p=c.default.import("blots/cursor"),f={characterData:!0,characterDataOldValue:!0,subtree:!0,childList:!0},m=0,g=(function(e){(0,o.default)(h,e)
+var s=d(h)
+function h(e){var t,i=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};(0,n.default)(this,h);(t=s.apply(this,arguments)).allowSegmentDeletion=!1
+t.textSections=[]
+t.originalText=""
+i.entityUrn&&(t.entityUrn=i.entityUrn)
+if(i.objectUrn){t.objectUrn=i.objectUrn
+t.allowSegmentDeletion=(0,u.allowSegmentDeletion)(t.objectUrn)}if(i.originalText){t.textSections=h.getMentionTextSections(i.originalText)
+t.originalText=i.originalText
+t.cachedDomText=i.originalText}t.observer=new MutationObserver(function(e){t.update(e)})
+t._enableMentionObserver()
+return t}(0,r.default)(h,[{key:"optimize",value:function(){(0,a.default)((0,l.default)(h.prototype),"optimize",this).apply(this,arguments)
+var e=this.next,t=this.prev
+if((0,u.nextBlotIsEqualMention)(e,this)){this._disableMentionObserver()
+for(;(0,u.nextBlotIsEqualMention)(e,this);){e.moveChildren(this)
+e.remove()
+e=e.next}this._enableMentionObserver()}else if((0,u.prevBlotIsEqualMention)(t,this)){this._disableMentionObserver()
+for(;(0,u.nextBlotIsEqualMention)(e,this);){t.moveChildren(this)
+t.remove()
+t=t.prev}this._enableMentionObserver()}}},{key:"update",value:function(e){var t=this;(0,a.default)((0,l.default)(h.prototype),"update",this).apply(this,arguments)
+e.forEach((function(e){if(!e.oldValue||!e.oldValue.includes(p.CONTENTS)){if("childList"===e.type&&e.target.className.includes(h.className)){if((0,i.default)(e.addedNodes).some((function(e){return e.classList&&e.classList.contains(p.className)}))){t.scroll.emitter.emit("mention-will-reload")
+return}t.textSections=h.getMentionTextSections(t.domNode.innerText)}if("characterData"===e.type){var n=c.default.find(e.target)
+if(!(n&&n.parent instanceof h))return
+e.target.length<e.oldValue.length&&t.didRemoveMentionTextOnUpdate(e)
+e.target.length>e.oldValue.length&&t.didAddMentionTextOnUpdate(e)
+e.target.length===e.oldValue.length&&e.target.data!==e.oldValue&&t.didAddMentionTextOnUpdate(e)}}}))}},{key:"updateDomText",value:function(e){this._disableMentionObserver()
+this.children.head.domNode.data=e
+this._enableMentionObserver()
+this.cachedDomText=e}},{key:"deleteAt",value:function(e,t){if(0!==e||t!==this.length())if(this.cachedDomText.length<this.domNode.innerText.length)this.updateDomText(this.cachedDomText)
+else{(0,a.default)((0,l.default)(h.prototype),"deleteAt",this).apply(this,arguments)
+this.removeWordsInRange(e,e+t)}else{this.scroll.emitter.emit("mention-range-will-change",this,0);(0,a.default)((0,l.default)(h.prototype),"deleteAt",this).apply(this,arguments)}}},{key:"_disableMentionObserver",value:function(){this.observer.disconnect()}},{key:"_enableMentionObserver",value:function(){this.observer.observe(this.domNode,f)}},{key:"_shouldRemoveMentionSegment",value:function(){var e=h.joinMentionTextSections(this.textSections)
+return this.domNode.innerText!==e}},{key:"didAddMentionTextOnUpdate",value:function(e){var t=e.oldValue,i=e.target.textContent,n=i.length-t.length,r=(0,u.getIndexFirstDiff)(t,i),a=h.joinMentionTextSections(this.textSections)
+if(0!==r)if(r+n!==this.length())this.scroll.emitter.emit("mention-will-unwrap",this)
+else{var o=i.substring(r),s=t+o
+if(s===a||s===this.originalText){this.textSections=h.getMentionTextSections(s)
+return}this.scroll.emitter.emit("mention-move-text-after",this,o)
+this.cachedDomText=this.domNode.innerText}else{var l=i.substring(r,n),c=l+t
+if(c===a||c===this.originalText){this.textSections=h.getMentionTextSections(c)
+return}this.scroll.emitter.emit("mention-move-text-before",this,l)
+this.cachedDomText=this.domNode.innerText}}},{key:"didRemoveMentionTextOnUpdate",value:function(e){if(this._shouldRemoveMentionSegment()){var t=e.oldValue,i=e.target.textContent,n=(0,u.getIndexFirstDiff)(t,i)
+this.removeWordsInRange(n,n+1)}}},{key:"removeWordsInRange",value:function(e,t){if(this.textSections.length<=2||!this.allowSegmentDeletion)this.scroll.emitter.emit("mention-will-remove",this)
+else{var i=h.getSectionsToRevove(this.textSections,e,t)
+if(i.length){var n=h.getTextIndexOfSection(this.textSections,this.textSections[i[0]])
+this.textSections=this.textSections.filter((function(e,t){return!i.includes(t)}))
+if(this.textSections.length){this.textSections[0].isSeparator&&this.textSections.shift()
+this.textSections[this.textSections.length-1].isSeparator&&this.textSections.pop()}this.updateDomText(h.joinMentionTextSections(this.textSections))
+this.scroll.emitter.emit("mention-range-will-change",this,n)}}}}],[{key:"create",value:function(e){var t=(0,a.default)((0,l.default)(h),"create",this).apply(this,arguments)
+t.setAttribute("href","#")
+t.setAttribute("data-entity-urn",e.entityUrn)
+t.setAttribute("data-guid",e.guid||h.createGuid())
+t.setAttribute("data-object-urn",e.objectUrn)
+t.setAttribute("data-original-text",e.originalText)
+t.setAttribute("spellcheck","false")
+return t}},{key:"formats",value:function(e){var t={}
+t.entityUrn=e.getAttribute("data-entity-urn")||""
+t.guid=e.getAttribute("data-guid")||""
+t.objectUrn=e.getAttribute("data-object-urn")||""
+t.originalText=e.getAttribute("data-original-text")||""
+return t}},{key:"createGuid",value:function(){return m++}},{key:"getMentionTextSections",value:function(e){for(var i=/\s+/g,n=[],r=0,a=i.exec(e);a;){var o=a,s=(0,t.default)(o,1)[0],l=e.slice(r,a.index)
+l&&n.push({text:l,isSeparator:!1})
+n.push({text:s,isSeparator:!0})
+r=a.index+s.length
+a=i.exec(e)}var c=e.slice(r,e.length)
+c&&n.push({text:c,isSeparator:!1})
+return n}},{key:"joinMentionTextSections",value:function(e){return e.map((function(e){return e.text})).join("")}},{key:"getTextIndexOfSection",value:function(e,t){var i=e.indexOf(t)
+if(-1===i)throw new Error("Section not found in textSections - section: ".concat(t,", textSections: ").concat(e))
+return e.slice(0,i).reduce((function(e,t){return e+t.text.length}),0)}},{key:"getSectionsToRevove",value:function(e,t,n){var r=new Set
+e.forEach((function(i,a){var o=h.getTextIndexOfSection(e,i),s=o+i.text.length
+if(o<=t&&t<s){r.add(a)
+i.isSeparator&&e[a-1]&&r.add(a-1)}if(o<n&&n<=s){r.add(a)
+e[a-1]&&r.add(a-1)}t<o&&s<n&&r.add(a)}))
+return(0,i.default)(r).sort((function(e,t){return e-t}))}}])
+return h})(h)
+g.className="ql-mention"
+g.tagName="a"
+g.blotName="mention"
+var y=g
+e.default=y})
+define("participate-text-editor/utils/quill/delta-model-transformers",["exports","rich-text/utils/constants","rich-text/utils/mentions-texteditor-helpers"],function(e,t,i){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.deltaFromTextMentionsObject=function(e){var n={ops:[]},r=e.text,a=void 0===r?"":r,o=e.mentions,s=(function(e,n){var r=(0,t.getHashtagMatchRegex)(),a=r.exec(e),o=[]
+for(;a;){var s={}
+s.match=(0,i.getHashtagAttributes)(a)
+s.type="hashtag"
+o.push(s)
+a=r.exec(e)}return n.concat(o).sort((function(e,t){return e.match.start-t.match.start}))})(a,void 0===o?[]:o)
+s.length?s[0].match.start>0&&n.ops.push({insert:a.slice(0,s[0].match.start)}):n.ops.push({insert:a})
+s.forEach((function(e,t){var i=(function(e){if(Ember.get(e,"entity.entityUrn"))return{insert:e.match.text,attributes:{mention:{entityUrn:Ember.get(e,"entity.entityUrn"),objectUrn:Ember.get(e,"entity.objectUrn"),originalText:e.match.text,text:e.match.text}}}
+if("hashtag"===e.type)return{insert:e.match.text,attributes:{hashtag:!0}}
+return null})(e)
+n.ops.push(i)
+var r=e.match.start+e.match.length,o=s[t+1]
+o?o.match.start>r&&n.ops.push({insert:a.slice(r,o.match.start)}):n.ops.push({insert:a.slice(r)})}))
+n.ops.push({insert:"\n"})
+return n}
+e.deltaToTextMentionsObject=function(e){var t=0,i=e.ops.reduce((function(e,i){var n=i.insert
+e.text+=n
+i.attributes&&i.attributes.mention&&e.mentions.push({match:{start:t,length:n.length,text:n},entity:{entityUrn:i.attributes.mention.entityUrn}})
+t+=n.length
+return e}),{text:"",mentions:[]})
+i.text.endsWith("\n")&&(i.text=i.text.slice(0,-1))
+return i}})
+define("participate-text-editor/utils/quill/formats/guard",["exports","@babel/runtime/helpers/esm/classCallCheck","@babel/runtime/helpers/esm/createClass","@babel/runtime/helpers/esm/get","@babel/runtime/helpers/esm/inherits","@babel/runtime/helpers/esm/possibleConstructorReturn","@babel/runtime/helpers/esm/getPrototypeOf","quill"],function(e,t,i,n,r,a,o,s){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+function l(e){var t=(function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1
+if(Reflect.construct.sham)return!1
+if("function"==typeof Proxy)return!0
+try{Date.prototype.toString.call(Reflect.construct(Date,[],(function(){})))
+return!0}catch(e){return!1}})()
+return function(){var i,n=(0,o.default)(e)
+if(t){var r=(0,o.default)(this).constructor
+i=Reflect.construct(n,arguments,r)}else i=n.apply(this,arguments)
+return(0,a.default)(this,i)}}var c=(function(e){(0,r.default)(s,e)
+var a=l(s)
+function s(){(0,t.default)(this,s)
+return a.apply(this,arguments)}(0,i.default)(s,null,[{key:"create",value:function(){return(0,n.default)((0,o.default)(s),"create",this).call(this)}},{key:"formats",value:function(){return!0}}])
+return s})(s.default.import("blots/inline"))
+c.className="ql-guard"
+c.blotName="guard"
+c.CONTENT="​"
+var u=c
+e.default=u})
+define("participate-text-editor/utils/quill/hashtag-utils",["exports","@babel/runtime/helpers/esm/objectSpread2","@babel/runtime/helpers/esm/slicedToArray","quill","rich-text/utils/constants","participate-text-editor/utils/constants"],function(e,t,i,n,r,a){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.getValidHashtags=s
+e.createDeltaWithPotentialHashtag=l
+e.transformDelta=function(e){var n=new o
+e.forEach((function(e,s){var c=(function(e,n,o){var s=(0,t.default)((0,t.default)({},e),{},{attributes:Object.keys(e.attributes||{}).reduce((function(t,i){a.BLOT_WHITELIST.has(i)&&(t[i]=e.attributes[i])
+return t}),{})}),c=s.insert,u=n>0&&o[o.length-1]
+if(s.attributes.hashtag)return (function(e,t,i){var n=l(e)
+if(t&&t.attributes&&t.attributes.hashtag){var a=n[0].insert,o=(0,r.getHashtagMatchRegex)(),s=a.match(o)
+if(s&&s[0]===a)return{operations:[{insert:i.insert}]}
+var c=t.insert+i.insert
+if((s=c.match(o))&&s[0]===c){t.insert+=i.insert
+return{previousOperation:t}}}else if(t&&!t.attributes&&t.insert[t.insert.length-1].match(/[/&\w]/)){t.insert+=i.insert
+return{previousOperation:t}}return{operations:n}})(c,u,s)
+if(s.attributes.mention||s.attributes.guard)return{operations:[s]}
+return (function(e,t){var n=l(e)
+if(t&&t.attributes&&t.attributes.hashtag){var a=(0,i.default)(n,1),o=a[0]
+if(o.attributes&&o.attributes.hashtag)n[0]={insert:o.insert}
+else if(!o.attributes){for(var s=(0,r.getHashtagMatchRegex)(),c=t.insert,u=o.insert,d=0;d<u.length;d++){var h=c+u.slice(d,d+1),p=h.match(s)
+if(!p||p[0]!==h)break
+c=h}var f=u.slice(d)
+f?n[0].insert=f:n.shift()
+if(t.insert!==c){t.insert=c
+return{operations:n,previousOperation:t}}return{operations:n}}}else if(t&&!t.attributes&&t.insert[t.insert.length-1].match(/[/&\w]/)){t.insert+=n[0].insert
+n.shift()
+return{previousOperation:t,operations:n}}return{operations:n}})(c,u)})(e,s,n.ops),u=c.operations,d=c.previousOperation
+d&&(n.ops[n.ops.length-1]=d)
+u&&u.length>0&&(n=n.concat(new o(u)))}))
+return n}
+var o=n.default.import("delta")
+function s(e){for(var t,n,a,o,s=(0,r.getHashtagMatchRegex)(),l=s.exec(e),c=[];l;){c.push((t=l,n=void 0,a=void 0,o=void 0,n=(0,i.default)(t,3),a=n[1],{text:o=n[2],start:a?t.index+1:t.index,length:o.length}))
+l=s.exec(e)}return c}function l(e){var t=s(e),i=[]
+if(0===t.length)i.push({insert:e})
+else{var n=t[t.length-1],r=n.start+n.length===e.length,a=0
+t.forEach((function(t){a<t.start&&i.push({insert:e.slice(a,t.start)})
+i.push({insert:t.text,attributes:{hashtag:!0}})
+a=t.start+t.length}))
+r||i.push({insert:e.slice(a)})}return i}})
+define("participate-text-editor/utils/quill/mention-utils",["exports","global-utils/utils/urn-converter","participate-text-editor/utils/quill/utils","participate-text-editor/utils/quill/blots/mention"],function(e,t,i,n){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.allowSegmentDeletion=function(e){if(!e)return!1
+var i=(0,t.fromUrn)(e,!1).type
+return r.includes(i)}
+e.getIndexFirstDiff=function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:""
+if(null!==e&&null!==t&&e!==t){for(var i=0;e[i]===t[i];)i++
+return i}return-1}
+e.isCharacterWhiteSpace=function(e,t){if(e){var i=new RegExp(/^\s$/)
+return i.test(e.charAt(t))}return!1}
+e.nextBlotIsEqualMention=function(e,t){return e instanceof n.default&&e.prev===t&&(0,i.isShallowEqualObjects)(t.formats().mention,e.formats().mention)}
+e.getSearchQuery=function(e,t){var n=(function(e,t){for(var i=[],n=null,r=0,a=0;a<e.ops.length;a++){var o=e.ops[a]
+if(!((r+=o.insert.length)<t)){n=o
+break}i.push(o)}return{before:i,current:n}})(e,t.index),r=n.before,l=n.current
+if(!l)return null
+var c=(function(e,t){var i=e.insert.slice(0,t.index)
+return s.reduce((function(e,t){var n=i.lastIndexOf(t)
+if(-1===n)return e
+var r=n+t.length
+return e&&e.indexAfterToken>r?e:{indexAfterToken:r,token:t}}),null)})(l,t)
+if(null===c)return null
+var u=c.indexAfterToken-c.token.length
+if(u>0&&(0,i.isAlphaNumericCharacter)(l.insert[u-1]))return null
+var d=r.reduce((function(e,t){return e+t.insert.length}),0),h=c.indexAfterToken+d,p=t.index-d
+if(p===c.indexAfterToken){if(l.insert.slice(c.indexAfterToken).match(/^[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/))return{query:l.insert[c.indexAfterToken],queryStartIndex:c.indexAfterToken,queryToken:c.token}
+var f=l.insert.slice(c.indexAfterToken).match(/^\w+/)
+if(!f)return{query:a,queryStartIndex:h,queryToken:c.token}}var m=l.insert.slice(c.indexAfterToken,p),g=l.insert.slice(p).match(/^\w+/)
+g&&(m+=g[0])
+if(!(function(e){return-1===e.indexOf("\n")&&e.length<=o})(m))return null
+return{query:m,queryToken:c.token,queryStartIndex:h}}
+e.prevBlotIsEqualMention=function(e,t){return e instanceof n.default&&e.next===t&&(0,i.isShallowEqualObjects)(t.formats().mention,e.formats().mention)}
+e.didDeleteTriggerCharacter=function(e,t){if(!e||!t)return!1
+return t.diff(e).ops.some((function(e){return e.insert&&s.some((function(t){return e.insert.includes(t)}))}))}
+e.MENTION_DENOTATION_CHARACTERS=e.MENTION_QUERY_LENGTH_LIMIT=e.DEFAULT_TYPEAHEAD_QUERY_NO_TEXT=void 0
+var r=["member"],a="a"
+e.DEFAULT_TYPEAHEAD_QUERY_NO_TEXT=a
+var o=100
+e.MENTION_QUERY_LENGTH_LIMIT=o
+var s=["@","@","＠"]
+e.MENTION_DENOTATION_CHARACTERS=s})
+define("participate-text-editor/utils/quill/modules/hashtag",["exports","@babel/runtime/helpers/esm/slicedToArray","@babel/runtime/helpers/esm/toConsumableArray","@babel/runtime/helpers/esm/objectSpread2","@babel/runtime/helpers/esm/classCallCheck","@babel/runtime/helpers/esm/createClass","@babel/runtime/helpers/esm/inherits","@babel/runtime/helpers/esm/possibleConstructorReturn","@babel/runtime/helpers/esm/getPrototypeOf","quill","participate-text-editor/utils/quill/blots/hashtag","participate-text-editor/utils/quill/hashtag-utils","participate-text-editor/utils/tracking/hashtag-tracking","participate-text-editor/utils/constants"],function(e,t,i,n,r,a,o,s,l,c,u,d,h,p){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+function f(e){var t=(function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1
+if(Reflect.construct.sham)return!1
+if("function"==typeof Proxy)return!0
+try{Date.prototype.toString.call(Reflect.construct(Date,[],(function(){})))
+return!0}catch(e){return!1}})()
+return function(){var i,n=(0,l.default)(e)
+if(t){var r=(0,l.default)(this).constructor
+i=Reflect.construct(n,arguments,r)}else i=n.apply(this,arguments)
+return(0,s.default)(this,i)}}var m=c.default.import("core/module"),g=c.default.import("delta"),y=(function(e){(0,o.default)(l,e)
+var s=f(l);(0,a.default)(l,null,[{key:"register",value:function(){c.default.register("blots/hashtag",u.default)}}])
+function l(e,t){var i;(0,r.default)(this,l);(i=s.call(this,e,t)).options=(0,n.default)({actions:{openTypeahead:null,closeTypeahead:null,generateNewWorkflowId:null,fireCustomTexteditorTrackingEvent:null,fireControlInteractionEvent:null},trackingData:{associatedInputControlUrn:null,associatedEntityUrn:null,controlType:null,rootObject:null}},t)
+i.actions=i.options.actions
+i.trackingData=i.options.trackingData
+i.context=i.options.context
+i.hasTriggeredTypeahead=!1
+i.attachMatchers()
+i.attachEvents()
+return i}(0,a.default)(l,[{key:"_setTypeaheadTriggeredValue",value:function(e){this.hasTriggeredTypeahead=e}},{key:"compositionEnd",value:function(){var e=this.quill.getContents()
+this.createFormattedHashtags(e)
+var t=this.quill.getSelection()
+t&&this.detectTypeaheadTrigger(t.index)}},{key:"attachMatchers",value:function(){var e;(e=this.quill.clipboard).addMatcher.apply(e,(0,i.default)(l.matchHashtag()))}},{key:"attachEvents",value:function(){this.quill.on("hashtag-unwrap",this.unwrapHashtag.bind(this))
+this.quill.on("editor-change",this.onEditorChange.bind(this))
+this.quill.root.addEventListener("compositionend",this.compositionEnd.bind(this))}},{key:"unwrapHashtag",value:function(e){var t=this.quill.getIndex(e),i=e.length()
+this.quill.removeFormat(t,i)}},{key:"onEditorChange",value:function(e){for(var t=arguments.length,i=new Array(t>1?t-1:0),n=1;n<t;n++)i[n-1]=arguments[n]
+var r=i[2]
+if(!this.quill.selection.composing)if(e===c.default.events.TEXT_CHANGE&&r===c.default.sources.USER){var a=this.quill.getContents(),o=i[0].ops.some((function(e){return e.insert&&e.insert.includes("\n")}))
+this.createFormattedHashtags(a,o)
+var s=this.quill.getSelection()
+if(!s)return
+this.detectTypeaheadTrigger(s.index)}else if(e===c.default.events.SELECTION_CHANGE){var l=i[0],u=i[1]
+!l||u&&l.index===u.index||this.detectTypeaheadTrigger(l.index)}}},{key:"insertHashtag",value:function(e,t,i){var n=e.text.length+t,r=(new g).retain(t).delete(i).insert(e.text,{hashtag:!0}).insert(" ")
+this.quill.updateContents(r,c.default.sources.USER)
+this.quill.setSelection(n+" ".length,c.default.sources.USER)}},{key:"onTypeaheadSelect",value:function(e,i){var n=this.quill.getSelection(!0).index,r=this.quill.getLeaf(n),a=(0,t.default)(r,1)[0],o=a.text.slice(1),s=(0,h.getSearchHeaderForHashtagTrackingEvent)(o)
+if(a){var l=this.quill.getIndex(a),c={text:e.text}
+this.insertHashtag(c,l,a.text.length)
+this.actions.fireControlInteractionEvent("".concat(this.trackingData.controlType,"_select_hashtag_typeahead"))
+this.actions.fireCustomTexteditorTrackingEvent(h.EVENTS.ACTION,(0,h.getHashtagSuggestionActionSelectEventPayload)(s,e,i),p.TYPEAHEAD_TYPES_MAP.HASHTAG)
+this._setTypeaheadTriggeredValue(!1)}}},{key:"createFormattedHashtags",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]&&arguments[1],i=e.diff((0,d.transformDelta)(e.ops))
+i.ops.length>0?this.quill.updateContents(i):t&&this.quill.setContents(e)}},{key:"fireDismissTypeaheadTracking",value:function(e){if(e){var t=(0,h.getSearchHeaderForHashtagTrackingEvent)(e)
+this.actions.fireCustomTexteditorTrackingEvent(h.EVENTS.ACTION,(0,h.getHashtagSuggestionActionDismissEventPayload)(t),p.TYPEAHEAD_TYPES_MAP.HASHTAG)}}},{key:"detectTypeaheadTrigger",value:function(e){var i=this.quill.getLeaf(e),n=(0,t.default)(i,1)[0]
+if(n&&n.parent instanceof u.default){var r=n.text.substring(1)
+this.query=r
+this.actions.openTypeahead({typeaheadQuery:r,typeaheadType:u.default.blotName,onTypeaheadSelect:this.onTypeaheadSelect.bind(this),onDismissWithoutSelection:this.fireDismissTypeaheadTracking.bind(this)})
+if(!this.hasTriggeredTypeahead){this.actions.generateNewWorkflowId()
+var a=(0,h.getSearchHeaderForHashtagTrackingEvent)(r)
+this.actions.fireCustomTexteditorTrackingEvent(h.EVENTS.START,(0,h.getHashtagSuggestionStartEvent)(a,this.trackingData.associatedInputControlUrn),p.TYPEAHEAD_TYPES_MAP.HASHTAG)}this._setTypeaheadTriggeredValue(!0)}else{this._setTypeaheadTriggeredValue(!1)
+this.actions.closeTypeahead(u.default.blotName)}}}],[{key:"matchHashtag",value:function(){return[u.default.className,function(e,i){var n=(0,t.default)(i.ops,1)[0]
+return(new g).insert(n.insert)}]}}])
+return l})(m)
+e.default=y})
+define("participate-text-editor/utils/quill/modules/mention",["exports","@babel/runtime/helpers/esm/slicedToArray","@babel/runtime/helpers/esm/toConsumableArray","@babel/runtime/helpers/esm/classCallCheck","@babel/runtime/helpers/esm/createClass","@babel/runtime/helpers/esm/inherits","@babel/runtime/helpers/esm/possibleConstructorReturn","@babel/runtime/helpers/esm/getPrototypeOf","quill","participate-text-editor/utils/quill/blots/mention","participate-text-editor/utils/quill/formats/guard","participate-text-editor/utils/quill/mention-utils","participate-text-editor/utils/quill/utils","participate-text-editor/utils/tracking/mentions-tracking","participate-text-editor/utils/constants"],function(e,t,i,n,r,a,o,s,l,c,u,d,h,p,f){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+function m(e){var t=(function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1
+if(Reflect.construct.sham)return!1
+if("function"==typeof Proxy)return!0
+try{Date.prototype.toString.call(Reflect.construct(Date,[],(function(){})))
+return!0}catch(e){return!1}})()
+return function(){var i,n=(0,s.default)(e)
+if(t){var r=(0,s.default)(this).constructor
+i=Reflect.construct(n,arguments,r)}else i=n.apply(this,arguments)
+return(0,o.default)(this,i)}}var g=l.default.import("core/module"),y=l.default.import("delta"),v=l.default.import("parchment"),T=l.default.import("blots/text"),b=(function(e){(0,a.default)(s,e)
+var o=m(s);(0,r.default)(s,null,[{key:"register",value:function(){l.default.register("blots/mention",c.default)
+l.default.register("formats/guard",u.default)}}])
+function s(e,t){var i;(0,n.default)(this,s);(i=o.call(this,e,t)).range=e.getSelection()
+i.options={actions:{openTypeahead:null,closeTypeahead:null,generateNewWorkflowId:null,fireCustomTexteditorTrackingEvent:null,fireControlInteractionEvent:null},trackingData:{associatedInputControlUrn:null,associatedEntityUrn:null,controlType:null,rootObject:null,updateMetadata:null}}
+Object.assign(i.options,t)
+i.actions=i.options.actions
+i.trackingData=i.options.trackingData
+i.attachEvents()
+i.attachMatchers()
+i.hasTriggeredTypeahead=!1
+return i}(0,r.default)(s,[{key:"attachMatchers",value:function(){var e,t;(e=this.quill.clipboard).addMatcher.apply(e,(0,i.default)(this.matchMention()));(t=this.quill.clipboard).addMatcher.apply(t,(0,i.default)(this.matchTextNode()))}},{key:"attachEvents",value:function(){this.quill.on("mention-will-reload",this.onMentionWillReload.bind(this))
+this.quill.on("mention-move-text-before",this.onMentionMoveTextBefore.bind(this))
+this.quill.on("mention-move-text-after",this.onMentionMoveTextAfter.bind(this))
+this.quill.on("mention-range-will-change",this.onMentionWillChange.bind(this))
+this.quill.on("mention-will-unwrap",this.onMentionWillUnwrap.bind(this))
+this.quill.on("mention-will-remove",this.onMentionWillRemove.bind(this))
+this.quill.on(l.default.events.TEXT_CHANGE,this.onTextChange.bind(this))
+this.quill.on(l.default.events.SELECTION_CHANGE,this.onSelectionChange.bind(this))
+this.quill.root.addEventListener("compositionstart",this.compositionStart.bind(this))
+this.quill.root.addEventListener("compositionend",this.compositionEnd.bind(this))}},{key:"_setTypeaheadTriggeredValue",value:function(e){this.hasTriggeredTypeahead=e}},{key:"_removeGuards",value:function(){var e=this,t=this.quill.scroll.descendants(u.default,0,this.quill.getLength()),i=t.length
+t.forEach((function(t,n){var r=e.quill.getIndex(t)
+t.domNode.parentNode.removeChild(t.domNode)
+i===n+1&&e._queueSetSelection(r)}))}},{key:"_queueSetSelection",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:0,t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:0,i=this.quill
+window.requestAnimationFrame((function(){i.setSelection(e,t,l.default.sources.USER)}))}},{key:"matchTextNode",value:function(){var e=this
+return[3,function(i,n){var r=e.range.index,a=e.quill.getLeaf(r),o=(0,t.default)(a,1)[0].parent
+e.isIndexInsideMention(r,o)&&e.quill.removeFormat(e.quill.getIndex(o),o.length())
+return n}]}},{key:"matchMention",value:function(){return[".ql-mention",function(e,t){var i=t.ops[0],n=c.default.formats(e)
+n.guid=c.default.createGuid()
+i.attributes={mention:n}
+i.attributes.mention.originalText=i.insert
+var r=new y([{insert:u.default.CONTENT,attributes:{guard:!0}}])
+return(new y).concat(r).concat(t).concat(r)}]}},{key:"isIndexInsideMention",value:function(e,t){if(t instanceof c.default){var i=(0,h.getBlotIndices)(this.quill,t),n=i.start,r=i.end
+return e>n&&e<r}return!1}},{key:"onMentionMoveTextAfter",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:""
+if(!(e.next instanceof T)){var i=v.create("text","")
+null==e.next?i.insertInto(e.parent):e.parent.insertBefore(i,e.next)}e.deleteAt(e.length()-t.length,t.length,!0)
+e.next.insertAt(0,t)
+this.onMentionWillChange(e,e.length()+1)}},{key:"onMentionWillReload",value:function(){var e=this.quill.getSelection()
+this.quill.setContents(this.quill.getContents())
+e&&this.quill.setSelection(e.index)}},{key:"onMentionMoveTextBefore",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:""
+if(!(e.prev instanceof T)){var i=v.create("text","")
+e.parent.insertBefore(i,e)}e.deleteAt(0,t.length,!0)
+e.prev.insertAt(e.prev.length(),t)
+this.onMentionWillChange(e,0)}},{key:"onTextChange",value:function(e,t){if(!this.quill.selection.composing){var i=this.quill.getSelection()
+null!==i&&(this.range=i)
+if(e&&e.ops){var n=e.ops.some((function(e){return e.attributes&&e.attributes.mention})),r=this.quill.getContents()
+n?this._removeGuards():(0,d.didDeleteTriggerCharacter)(t,r)&&this._setTypeaheadTriggeredValue(!1)}this.willDetectTypeaheadTrigger()}}},{key:"onSelectionChange",value:function(e){null!==e&&(this.range=e)
+this.willDetectTypeaheadTrigger()}},{key:"onMentionWillChange",value:function(e,t){var i=this.quill.getIndex(e)+t,n=(0,p.getSearchHeaderForMentionsTrackingEvent)()
+this.actions.fireCustomTexteditorTrackingEvent(p.EVENTS.MENTION_ACTION,(0,p.getMentionSuggestionActionEventPayload)(n,p.ACTIONS.PERSONALIZE),f.TYPEAHEAD_TYPES_MAP.MENTION)
+this._queueSetSelection(i)}},{key:"onMentionWillRemove",value:function(e){var t=this.quill.getIndex(e)
+e.remove()
+var i=(0,p.getSearchHeaderForMentionsTrackingEvent)()
+this.actions.fireCustomTexteditorTrackingEvent(p.EVENTS.MENTION_ACTION,(0,p.getMentionSuggestionActionEventPayload)(i,p.ACTIONS.DELETE),f.TYPEAHEAD_TYPES_MAP.MENTION)
+this.currentMentionToken=null
+this._queueSetSelection(t)}},{key:"onMentionWillUnwrap",value:function(e){var t=this.range.index
+this.quill.removeFormat(this.quill.getIndex(e),e.length())
+var i=(0,p.getSearchHeaderForMentionsTrackingEvent)()
+this.actions.fireCustomTexteditorTrackingEvent(p.EVENTS.MENTION_ACTION,(0,p.getMentionSuggestionActionEventPayload)(i,p.ACTIONS.DELETE),f.TYPEAHEAD_TYPES_MAP.MENTION)
+this.quill.setSelection(t,0,l.default.sources.USER)}},{key:"compositionStart",value:function(){this.actions.closeTypeahead(f.TYPEAHEAD_TYPES_MAP.MENTION)}},{key:"compositionEnd",value:function(){var e=this.quill.getSelection()
+if(e){this.range=e
+this.willDetectTypeaheadTrigger()}}},{key:"willDetectTypeaheadTrigger",value:function(){if(null!=this.range){var e=(0,d.getSearchQuery)(this.quill.getContents(),this.range)
+if(e){this.actions.openTypeahead({typeaheadQuery:e.query,typeaheadType:f.TYPEAHEAD_TYPES_MAP.MENTION,onTypeaheadSelect:this.insertMention.bind(this,e.queryStartIndex,e.queryToken,e.query.length),onDismissWithoutSelection:this.fireDismissTypeaheadTracking.bind(this)})
+if(!this.hasTriggeredTypeahead){this.actions.generateNewWorkflowId()
+this.actions.fireControlInteractionEvent("".concat(this.trackingData.controlType,"_mention_start"))
+var t=(0,p.getSearchHeaderForMentionsTrackingEvent)(e.query)
+this.actions.fireCustomTexteditorTrackingEvent(p.EVENTS.START,(0,p.getMentionSuggestionStartEventPayload)(t,this.trackingData.associatedInputControlUrn,this.trackingData.associatedEntityUrn,this.trackingData.rootObject,this.trackingData.updateMetadata,e.queryToken),f.TYPEAHEAD_TYPES_MAP.MENTION)}this._setTypeaheadTriggeredValue(!0)}else this.actions.closeTypeahead(f.TYPEAHEAD_TYPES_MAP.MENTION)}}},{key:"fireDismissTypeaheadTracking",value:function(e){if(e){var t=(0,p.getSearchHeaderForMentionsTrackingEvent)(e)
+this.actions.fireCustomTexteditorTrackingEvent(p.EVENTS.MENTION_ACTION,(0,p.getMentionSuggestionActionEventPayload)(t,p.ACTIONS.DISMISS),f.TYPEAHEAD_TYPES_MAP.MENTION)}}},{key:"insertMention",value:function(e,t,i,n,r){var a=e-t.length,o=t.length,s=Object.assign({},n,{originalText:n.text}),c=this.quill.getText(e,i).trim()||d.DEFAULT_TYPEAHEAD_QUERY_NO_TEXT,h=0,m=this.quill.getText(e,s.originalText.length).toLowerCase()
+h=i>=s.originalText.length?o+i:m===s.originalText.toLowerCase()?o+s.originalText.length:o+i
+delete s.text
+var g=(new y).retain(a).delete(h).insert(u.default.CONTENT,{guard:!0}).insert(s.originalText,{mention:s}).insert(u.default.CONTENT,{guard:!0})
+this.quill.updateContents(g,l.default.sources.USER)
+var v=a+s.originalText.length
+this._queueSetSelection(v)
+var T=(0,p.getSearchHeaderForMentionsTrackingEvent)(c)
+this.actions.fireControlInteractionEvent("".concat(this.trackingData.controlType,"_mention_select"))
+this.actions.fireCustomTexteditorTrackingEvent(p.EVENTS.MENTION_ACTION,(0,p.getMentionSuggestionActionSelectEventPayload)(T,s,r),f.TYPEAHEAD_TYPES_MAP.MENTION)
+this._setTypeaheadTriggeredValue(!1)
+this.actions.closeTypeahead(f.TYPEAHEAD_TYPES_MAP.MENTION)}}])
+return s})(g)
+e.default=b})
+define("participate-text-editor/utils/quill/quill-keyboard-bindings",["exports","@babel/runtime/helpers/esm/slicedToArray","quill"],function(e,t,i){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.enterKeyBinding=void 0
+var n={"entity enter":{key:i.default.import("modules/keyboard").keys.ENTER,format:["mention"],handler:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},n=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},r=e.index
+if(r&&""!==n.prefix&&""!==n.suffix){var a=this.quill.getLeaf(r),o=(0,t.default)(a,1)[0]
+this.quill.removeFormat(this.quill.getIndex(o),o.length(),i.default.sources.SILENT)
+this.quill.setSelection(r)}return!0}}}
+e.enterKeyBinding=n})
+define("participate-text-editor/utils/quill/utils",["exports","@babel/runtime/helpers/esm/typeof"],function(e,t){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.normalizeTypeaheadResponse=function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{}
+return{entityUrn:Ember.getWithDefault(e,"targetUrn",""),objectUrn:Ember.getWithDefault(e,"objectUrn",""),text:Ember.getWithDefault(e,"text.text",""),trackingId:Ember.getWithDefault(e,"trackingId","")}}
+e.getBlotIndices=function(e,t){if(e&&t){var i={}
+i.start=e.getIndex(t)
+i.end=i.start+t.length()
+return i}return}
+e.trimLineBreakFromDelta=function(e){var t=e.ops[e.ops.length-1]
+t.insert&&t.insert.endsWith("\n")&&(t.insert=t.insert.slice(0,-1))}
+e.isShallowEqualObjects=function(e,i){if(e===i)return!0
+if("object"!==(0,t.default)(e)||null==e)return!1
+if("object"!==(0,t.default)(i)||null==i)return!1
+var n=Object.keys(e)
+if(n.length!==Object.keys(i).length)return!1
+return n.every((function(t){return e[t]===i[t]}))}
+e.isAlphaNumericCharacter=function(e){if(e)return!!e.match(i)
+return!1}
+var i=new RegExp(/\w/)})
+define.alias("@linkedin/ember-restli-api-metadata/utils/schema-helpers","participate-text-editor/utils/schema-helpers")
+define("participate-text-editor/utils/text-editor-utils",["exports","participate-text-editor/utils/constants","participate-text-editor/utils/quill/mention-utils"],function(e,t,i){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.isValidTypeaheadType=function(e){return Object.values(t.TYPEAHEAD_TYPES_MAP).includes(e)}
+e.mentionQueryMatchesRecommendedMention=function(e,t){if(t===i.DEFAULT_TYPEAHEAD_QUERY_NO_TEXT)return!0
+var n=t.toLowerCase()
+return e.toLowerCase().startsWith(n)}})
+define("participate-text-editor/utils/tracking/hashtag-tracking",["exports"],function(e){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.getSearchHeaderForHashtagTrackingEvent=function(){return{query:arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",platform:"TYPEAHEAD"}}
+e.getHashtagSuggestionStartEvent=function(e,t,i,n){return{searchHeader:e,associatedInputControlUrn:"".concat(t,"_add_commentary"),associatedEntityUrn:i,rootObject:n,hashtagSourceType:"TYPEAHEAD"}}
+e.getHashtagSuggestionActionDismissEventPayload=function(e){return{searchHeader:e,actionType:t.DISMISS,hashtagSourceType:"TYPEAHEAD"}}
+e.getHashtagSuggestionActionSelectEventPayload=function(e,i,n){return{searchHeader:e,actionType:t.SELECT,result:{entityUrn:i.objectUrn,position:{index:n},trackingId:i.trackingId},hashtagSourceType:"TYPEAHEAD"}}
+e.ACTIONS=e.EVENTS=void 0
+e.EVENTS={START:"HashtagSuggestionStartEvent",ACTION:"HashtagSuggestionActionEvent"}
+var t={SELECT:"SELECT",DISMISS:"DISMISS"}
+e.ACTIONS=t})
+define("participate-text-editor/utils/tracking/mentions-tracking",["exports"],function(e){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.getMentionSuggestionStartEventPayload=function(e,t){var i=arguments.length>2&&void 0!==arguments[2]?arguments[2]:null,n=arguments.length>3&&void 0!==arguments[3]?arguments[3]:null,r=arguments.length>4&&void 0!==arguments[4]?arguments[4]:null,a=arguments.length>5?arguments[5]:void 0,o=r?{objectUrn:Ember.get(r,"shareUrn"),trackingId:Ember.get(r,"trackingData.trackingId")}:n
+return{searchHeader:e,associatedInputControlUrn:"".concat(t,"_mention_start"),associatedEntityUrn:i,rootObject:o,mentionType:"EXPLICIT",mentionStartOperator:a}}
+e.getSearchHeaderForMentionsTrackingEvent=function(){return{query:arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",platform:"TYPEAHEAD",vertical:"PEOPLE"}}
+e.getMentionSuggestionActionSelectEventPayload=function(e,i,n){return{searchHeader:e,actionType:t.SELECT,result:{entityUrn:i.objectUrn,position:{index:n}}}}
+e.getMentionSuggestionActionEventPayload=function(e,t){var i=arguments.length>2&&void 0!==arguments[2]?arguments[2]:null
+return{searchHeader:e,actionType:t,result:i}}
+e.ACTIONS=e.EVENTS=void 0
+e.EVENTS={START:"MentionSuggestionStartEvent",VIEW_LIST:"MentionSuggestionImpressionEvent",MENTION_ACTION:"MentionSuggestionActionEvent",RESULT_IMPRESSION:"MentionResultHit"}
+var t={SELECT:"SELECT",DELETE:"DELETE",DISMISS:"DISMISS",PERSONALIZE:"PERSONALIZE"}
+e.ACTIONS=t})
+define("participate-text-editor/utils/tracking/texteditor-tracking",["exports","@babel/runtime/helpers/esm/classCallCheck","@babel/runtime/helpers/esm/createClass","participate-text-editor/utils/constants","ember-cli-pemberly-tracking/utils/uuid"],function(e,t,i,n,r){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+e.default=void 0
+var a=(function(){function e(i,n){(0,t.default)(this,e)
+this.trackingService=i
+this.workflowId=n
+this.typeaheadSearchId=r.default.v4()}(0,i.default)(e,[{key:"fireTrackingEvent",value:function(e,t,i){t.searchHeader&&(t.searchHeader.rawSearchId=this.typeaheadSearchId)
+switch(i){case n.TYPEAHEAD_TYPES_MAP.MENTION:t.mentionWorkflowId=this.workflowId
+this.trackingService.fireTrackingPayload(e,t)
+break
+case n.TYPEAHEAD_TYPES_MAP.HASHTAG:t.hashtagWorkflowId=this.workflowId
+this.trackingService.fireTrackingPayload(e,t)}}}])
+return e})()
+e.default=a})
+define.alias("ember-vector-images/utils/vector-url","participate-text-editor/utils/vector-url")
+
+//# sourceMappingURL=engine.map
