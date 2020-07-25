@@ -164,6 +164,7 @@ def start(df2):
             with st.echo():
                 folium_static(map_india)
     
+        st.success('Success!')
         st.balloons()
         
     
@@ -172,4 +173,5 @@ def start(df2):
         st.subheader('Data as per Your Selection')
         st.markdown('This DataFrame is loaded with {} rows and {} columns.'.format(sh2[0], sh2[1]))
         st.write(user_df.head(100))
+        st.success('Success!')
         st.balloons()

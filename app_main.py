@@ -57,8 +57,8 @@ def get_loc(address):
             location = locationd
     return location
 
-url = 'crop_production.csv'
-url2 = 'processed_data.csv'
+url = 'Datasets/crop_production.csv'
+url2 = 'Datasets/processed_data.csv'
 df = load_data(url)
 df2 = load_data(url2)
 #df2=process_data()
@@ -90,6 +90,7 @@ if st.sidebar.checkbox('Show Raw Data', False):
     st.subheader('Raw Data')
     st.markdown('This Data Set Contains {} rows and {} columns.'.format(sh[0], sh[1]))
     st.write(df.head(100))
+    st.success('Success!')
     st.balloons()
     
 if st.sidebar.checkbox('Show Processed Data', False):
@@ -97,4 +98,5 @@ if st.sidebar.checkbox('Show Processed Data', False):
     st.subheader('Processed Data')
     st.markdown('This DataFrame is loaded with {} rows and {} columns.'.format(sh1[0], sh1[1]))
     st.write(df2.head(100))
+    st.success('Success!')
     st.balloons()

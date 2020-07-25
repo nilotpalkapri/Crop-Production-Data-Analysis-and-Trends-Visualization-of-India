@@ -1,0 +1,10 @@
+streamlit
+branca
+beautifulsoup4
+folium
+geopy
+pandas
+numpy
+matplotlib
+seaborn
+streamlit_folium
