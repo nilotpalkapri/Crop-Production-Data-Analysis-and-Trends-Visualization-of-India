@@ -6,7 +6,7 @@ import folium # map rendering library
 import branca.colormap as cl
 from streamlit_folium import folium_static
 
-c=0
+c = 0
 def start(df2):
     global c
     color = [['black', '#566573'], 
@@ -60,48 +60,55 @@ def start(df2):
 
     lowercase = lambda x:str(x).lower()
     user_df.rename(lowercase, axis='columns', inplace=True)
-
-    mean = np.mean(user_df['production']) #get the mean Production amount
-    mini = int(np.min(user_df['production'])) #get the minimum Production amount
-    maxi = int(np.max(user_df['production'])) #get the maximum Production amount
-
-
-    st.sidebar.subheader('What is the minimum amount of Production?')
-    min_production = st.sidebar.slider('What is the minimum amount of Production?', 
-                                       min_value=0, 
-                                       max_value=int(max(user_df['production'])), 
-                                       value=0)
-
-    st.sidebar.subheader('Select No of Sides for the Marker: ')
-    marker_side = st.sidebar.number_input('You can leave it default for Circle.', 
-                           min_value=3, 
-                           max_value=100,
-                           value=100, 
-                           step=1)
-
-    st.sidebar.subheader('Select Marker Radius Multiplier: ')
-    multiplier = st.sidebar.number_input('You can leave it default to keep maximum radious 40.', 
-                           min_value=0.5, 
-                           max_value=10.0,
-                           value=40*mean/maxi, 
-                           step=0.5)
-
-    st.sidebar.subheader('Select Map Type: ')
-    map_tiles = st.sidebar.radio('Select style of the map you want to see.', 
-             ('OpenStreetMap', 
-              'Mapbox Bright', 
-              'Stamen Terrain', 'Stamen Toner', 'Stamen Watercolor', 
-              'CartoDB positron', 'CartoDB dark_matter'))
-    if len(map_tiles)==0:
-        map_tiles = 'OpenStreetMap'
-
-    #for i in select_crop:
-    #    pick_color = st.beta_color_picker('Pick A Color for {}'.format(i), '#00f900')
-
-    midpoint = (np.average(user_df['latitude']),np.average(user_df['longitude'])) #get_loc('India')
-    st.sidebar.markdown('Click Proceed to Continue.')
     
-    if  st.sidebar.button('Proceed to Map ⏩') or c>0:
+    try:
+        mean = np.mean(user_df['production']) #get the mean Production amount
+        mini = int(np.min(user_df['production'])) #get the minimum Production amount
+        maxi = int(np.max(user_df['production'])) #get the maximum Production amount
+    
+
+        st.sidebar.subheader('What is the minimum amount of Production?')
+        min_production = st.sidebar.slider('What is the minimum amount of Production?', 
+                                           min_value=0, 
+                                           max_value=int(max(user_df['production'])), 
+                                           value=0)
+
+        st.sidebar.subheader('Select No of Sides for the Marker: ')
+        marker_side = st.sidebar.number_input('You can leave it default for Circle.', 
+                               min_value=3, 
+                               max_value=100,
+                               value=100, 
+                               step=1)
+
+        st.sidebar.subheader('Select Marker Radius Multiplier: ')
+        multiplier = st.sidebar.number_input('You can leave it default to keep maximum radious 40.', 
+                               min_value=0.5, 
+                               max_value=10.0,
+                               value=40*mean/maxi, 
+                               step=0.5)
+
+        st.sidebar.subheader('Select Map Type: ')
+        map_tiles = st.sidebar.radio('Select style of the map you want to see.', 
+                 ('OpenStreetMap', 
+                  'Mapbox Bright', 
+                  'Stamen Terrain', 'Stamen Toner', 'Stamen Watercolor', 
+                  'CartoDB positron', 'CartoDB dark_matter'))
+        if len(map_tiles)==0:
+            map_tiles = 'OpenStreetMap'
+
+        #for i in select_crop:
+        #    pick_color = st.beta_color_picker('Pick A Color for {}'.format(i), '#00f900')
+
+        midpoint = (np.average(user_df['latitude']),np.average(user_df['longitude'])) #get_loc('India')
+        st.sidebar.markdown('Click Proceed to Continue.')
+        e=0
+        
+    except:
+        e=1
+        st.error('No Data available for your choice! Please select atleast one from each option or try other option.')
+        
+    
+    if e==0 and (st.sidebar.button('Proceed to Map ⏩') or c>0):
         c+=1
         for i in select_year:
             data = user_df.loc[(user_df['crop_year']==i)]

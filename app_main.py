@@ -10,11 +10,18 @@ from ipywidgets import Button, Layout, jslink, IntText, IntSlider
 import map_with_folium as mf
 import trends_visualization as tv
 
-st.title('🌾Crop Production Data Analysis and Trends Visualization of India🌾')
-st.sidebar.header('🌾Crop Production Data Analysis and Trends Visualization of India🌾')
-st.latex('Crop Production Data Analysis and Trends Visualization of India')
-st.image('Decorator/crop_front.jpg', width=700)
+st.markdown("""<h1 align="center" style="color:DarkGreen;">
+            🌾Crop Production Data Analysis and Trends Visualization of India🌾</h1>""", 
+            unsafe_allow_html=True)
+st.sidebar.markdown("""<h1 align="center" style="color:DarkGreen;">
+                    🌾Crop Production Data Analysis and Trends Visualization of India🌾</h1>""", 
+                    unsafe_allow_html=True)
 
+#st.title('🌾Crop Production Data Analysis and Trends Visualization of India🌾')
+#st.sidebar.header('🌾Crop Production Data Analysis and Trends Visualization of India🌾')
+#st.latex('Crop Production Data Analysis')
+st.image('Decorator/crop_front.jpg', use_column_width=True)
+st.sidebar.image('Decorator/crop_front.jpg', use_column_width=True)
 
 #@st.cache(persist=True)
 def load_data(url):
@@ -98,9 +105,8 @@ elif user_options==3:
     
 
     
-    
-    
-    
+if st.button('Watch Demo Video'):
+    st.video('https://youtu.be/ubvwYLdHqAM')
     
 if st.sidebar.checkbox('Show Raw Data', False):
     sh = df.shape
@@ -118,9 +124,13 @@ if st.sidebar.checkbox('Show Processed Data', False):
     st.success('Success!')
     st.balloons()
     
-    
-    
-    
+if user_options==0:
+    for i in range(7):
+        st.sidebar.text(' ')
+        
+if user_options==0 or st.sidebar.button('Watch Demo GIF'):
+    st.image('Decorator/app_demo.gif',use_column_width=True)
+
 st.sidebar.text('©nilotpal')
 
 #Social connections
@@ -159,48 +169,62 @@ st.sidebar.markdown("""
 
 
 <!--
-<a href="https://wa.me/+918159853451">
-  <img src="https://www.stickpng.com/assets/images/580b57fcd9996e24bc43c543.png" alt="Whatsapp" style="width:25px;height:25px;border:0">
+<a href="https://wa.me/+918159853451" target="_blank">
+  <img src="https://cdn0.iconfinder.com/data/icons/tuts/256/whatsapp.png" 
+  alt="Whatsapp" style="width:25px;height:25px;border:0">
 </a> -->
 
-<a href="https://www.facebook.com/nilu.kapri/">
-  <img src="http://img2.wikia.nocookie.net/__cb20140429004607/jamescameronstitanic/images/4/4a/Facebook_favicon.png" alt="Facebook" style="width:22px;height:22px;border:0">
+<a href="https://www.facebook.com/nilu.kapri/" target="_blank">
+  <img src="https://cdn4.iconfinder.com/data/icons/free-social-media-icons/512/Facebook.png" 
+  alt="Facebook" style="width:22px;height:22px;border:0">
 </a>
 
-<a href="https://instagram.com/Nilotpal__Kapri">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" style="width:22px;height:22px;border:0">
+<a href="https://instagram.com/Nilotpal__Kapri" target="_blank">
+  <img src="https://cdn4.iconfinder.com/data/icons/social-media-2146/512/25_social-256.png" 
+  alt="Instagram" style="width:22px;height:22px;border:0">
 </a> 
 
-<a href="https://m.me/106286494269703">
-  <img src="https://maxcdn.icons8.com/Share/icon/Logos/facebook_messenger1600.png" alt="Messenger" style="width:25px;height:25px;border:0">
+<a href="https://m.me/106286494269703" target="_blank">
+  <img src="https://cdn3.iconfinder.com/data/icons/social-media-2068/64/_Facebook_Messenger-512.png" 
+  alt="Messenger" style="width:22px;height:22px;border:0">
 </a>
 
-<a href="https://twitter.com/nilotpalkapri">
-  <img src="https://low-carb-scams.com/wp-content/uploads/2014/04/Twitter-Bird-Logo.png" alt="Twitter" style="width:25px;height:25px;border:0">
+<a href="https://twitter.com/nilotpalkapri" target="_blank">
+  <img src="https://cdn3.iconfinder.com/data/icons/social-media-2068/64/_Twitter-256.png" 
+  alt="Twitter" style="width:23px;height:23px;border:0">
 </a>
 
-<a href="https://www.youtube.com/channel/UCe_4uLTNbOvhJGHRVqqbHeQ">
-  <img src="https://image.flaticon.com/icons/svg/174/174883.svg" alt="YouTube" style="width:22px;height:22px;border:0">
+<a href="https://www.youtube.com/channel/UCe_4uLTNbOvhJGHRVqqbHeQ" target="_blank">
+  <img src="https://cdn2.iconfinder.com/data/icons/social-media-2285/512/1_Youtube_colored_svg-512.png" 
+  alt="YouTube" style="width:22px;height:25px;border:0">
 </a>
 
-<a href="mailto:nilotpal623401@gmail.com">
-  <img src="https://www.freepngimg.com/download/gmail/66419-account-google-icons-computer-email-gmail.png" alt="Mail" style="width:25px;height:19px;border:0">
+<a href="mailto:nilotpal623401@gmail.com" target="_blank">
+  <img src="https://cdn2.iconfinder.com/data/icons/once-again/48/Gmail.png" 
+  alt="Mail" style="width:25px;height:25px;border:0">
 </a>
 
-<a href="https://www.linkedin.com/in/nilotpalkapri">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Linkedin.svg/1200px-Linkedin.svg.png" alt="Linkedin" style="width:19px;height:19px;border:0">
+<a href="https://www.linkedin.com/in/nilotpalkapri" target="_blank">
+  <img src="https://cdn4.iconfinder.com/data/icons/free-social-media-icons/256/LinkedIn.png" 
+  alt="Linkedin" style="width:22px;height:22px;border:0">
 </a>
 
-
-
-<a href="https://independent.academia.edu/nilotpalkapri">
-  <img src="https://image.flaticon.com/icons/png/512/25/25645.png" alt="Academia" style="width:19px;height:19px;border:0">
+<a href="https://github.com/nilotpalkapri/" target="_blank">
+  <img src="https://cdn4.iconfinder.com/data/icons/miu-hexagon-shadow-social/60/github-hexagon-shadow-social-media-256.png" 
+  alt="Whatsapp" style="width:25px;height:25px;border:0">
 </a>
-<a href="https://orcid.org/0000-0001-7803-5957">
-  <img src="http://nitens.org/img/sm-icons/orcid.png" alt="Orcid" style="width:19px;height:19px;border:0">
+
+<a href="https://independent.academia.edu/nilotpalkapri" target="_blank">
+  <img src="https://image.flaticon.com/icons/png/512/25/25645.png" 
+  alt="Academia" style="width:22px;height:22px;border:0">
 </a>
-<a href="https://www.mendeley.com/profiles/nilotpal-kapri/">
-  <img src="http://cdn.onlinewebfonts.com/svg/img_435968.png" alt="Mendeley" style="width:22px;height:17px;border:0">
+<a href="https://orcid.org/0000-0001-7803-5957" target="_blank">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/ORCID_iD.svg/768px-ORCID_iD.svg.png" 
+  alt="Orcid" style="width:23px;height:23px;border:0">
+</a>
+<a href="https://www.mendeley.com/profiles/nilotpal-kapri/" target="_blank">
+  <img src="https://www.pinclipart.com/picdir/middle/568-5689345_2048-black-logo-mendeley-kecil-png-clipart.png" 
+  alt="Mendeley" style="width:22px;height:21px;border:0">
 </a>
 
 <!-- <p>We have added "border:0" to prevent IE9 (and earlier) from displaying a border around the image.</p> </p> -->

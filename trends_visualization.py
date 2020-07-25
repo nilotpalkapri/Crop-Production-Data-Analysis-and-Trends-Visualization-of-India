@@ -7,7 +7,7 @@ import matplotlib.cm as cm
 import matplotlib.colors as colors
 import seaborn as sns; sns.set(color_codes=True)
 
-d=0
+d = 0
 def start(df):
     global d
     def plot_with_seaborn(df_var,x_var,y_var):
@@ -57,14 +57,31 @@ def start(df):
     
     user_df = df.loc[(df['State_Name'].isin(select_state))]
     
-    st.sidebar.subheader('Select Crop: ')
-    select_crop = st.sidebar.multiselect('Please select as few as possible to get faster!', 
-                                         sorted([i for i in set(user_df['Crop'])]), 
-                                         default=['Rice',])
+    try:
+        st.sidebar.subheader('Select Crop: ')
+        select_crop = st.sidebar.multiselect('Please select as few as possible to get faster view!', 
+                                             sorted([i for i in set(user_df['Crop'])]), 
+                                             default=[[i for i in set(user_df['Crop'])][0],])
+        
+        user_df = user_df.loc[(user_df['Crop'].isin(select_crop))]
+        
+        st.sidebar.subheader('Select Season: ')
+        select_season = st.sidebar.multiselect('Please select as few as possible to get faster view!', 
+                                             (['Select All']+[i for i in set(user_df['Season'])]), 
+                                             default=[i for i in set(user_df['Season'])])
+        if 'Select All' in select_season:
+            select_season = [i for i in set(user_df['Season'])]
+        
+        user_df = user_df.loc[(user_df['Season'].isin(select_season))]
+        e=0
+    except:
+        e=1
+        st.error('Please select at least one from each option.')
     
-    user_df = user_df.loc[(user_df['Crop'].isin(select_crop))]
     
-    if st.sidebar.button('Proceed to Plot ⏩') or d>0:
+    
+    if e==0 and (st.sidebar.button('Proceed to Plot ⏩') or d>0):
+        d+=1
         for i in select_state: #process for all selected states
             temp_df = user_df.copy()
             temp_df = temp_df[temp_df.State_Name==i]
@@ -80,7 +97,7 @@ def start(df):
                     except:
                         total_prod = 0
                         total_area = 0
-                        Production_per_Area = 0
+                        prod_per_area = 0
                     final_df = final_df.append({'Crop_Year': k, 
                                                 'Total_Production': total_prod, 
                                                 'Total_Area': total_area, 
