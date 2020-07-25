@@ -7,8 +7,9 @@ import matplotlib.cm as cm
 import matplotlib.colors as colors
 import seaborn as sns; sns.set(color_codes=True)
 
+d=0
 def start(df):
-    
+    global d
     def plot_with_seaborn(df_var,x_var,y_var):
         try:
             plt.figure(figsize=(12, 4))
@@ -63,7 +64,7 @@ def start(df):
     
     user_df = user_df.loc[(user_df['Crop'].isin(select_crop))]
     
-    if st.sidebar.button('Proceed to Plot'):
+    if st.sidebar.button('Proceed to Plot ⏩') or d>0:
         for i in select_state: #process for all selected states
             temp_df = user_df.copy()
             temp_df = temp_df[temp_df.State_Name==i]

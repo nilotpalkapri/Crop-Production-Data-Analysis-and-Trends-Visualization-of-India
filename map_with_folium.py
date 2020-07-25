@@ -6,9 +6,9 @@ import folium # map rendering library
 import branca.colormap as cl
 from streamlit_folium import folium_static
 
-
+c=0
 def start(df2):
-    
+    global c
     color = [['black', '#566573'], 
              ['blue', '#5dade2'], 
              ['green', '#82e0aa'], 
@@ -99,8 +99,10 @@ def start(df2):
     #    pick_color = st.beta_color_picker('Pick A Color for {}'.format(i), '#00f900')
 
     midpoint = (np.average(user_df['latitude']),np.average(user_df['longitude'])) #get_loc('India')
-
-    if st.sidebar.button('Proceed to Map'):
+    st.sidebar.markdown('Click Proceed to Continue.')
+    
+    if  st.sidebar.button('Proceed to Map ⏩') or c>0:
+        c+=1
         for i in select_year:
             data = user_df.loc[(user_df['crop_year']==i)]
             data = data.query('production > @min_production').dropna(how='any')
