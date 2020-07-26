@@ -74,7 +74,10 @@ df2 = load_data(url2)
 #df2=process_data()
 #df2.to_csv('processed_data.csv', header=True, index=False)
 
-user_options = st.selectbox('Choose Your Goal', 
+
+
+st.subheader('Choose Your Goal: ')
+user_options = st.selectbox('Please select an option from the below dropdown.', 
                         [0,1,2,3], 
                         index=0, 
                         format_func=lambda x:['Select','Analyse and map all the datapoints using Folium library',
@@ -84,15 +87,15 @@ user_options = st.selectbox('Choose Your Goal',
 
 
 if user_options==0:
-    st.write('Please Select an Option.')
+    st.warning('Please Select an Option.')
 elif user_options==1:
-    st.markdown('Please Choose Parameters from Sidebar and Click Proceed.')
+    st.info('Please Choose Parameters from Sidebar and Click Proceed.')
     mf.start(df2)
 elif user_options==2:
-    st.markdown('Please Choose Parameters from Sidebar and Click Proceed.')
+    st.info('Please Choose Parameters from Sidebar and Click Proceed.')
     tv.start(df)
 elif user_options==3:
-    st.markdown('Please Choose Parameters from Sidebar and Click Proceed.')
+    st.info('Please Choose Parameters from Sidebar and Click Proceed.')
     mf.start(df2)
     tv.start(df)
 
@@ -103,6 +106,7 @@ elif user_options==3:
     
     
     
+
 
     
 if st.button('Watch Demo Video'):
@@ -125,7 +129,7 @@ if st.sidebar.checkbox('Show Processed Data', False):
     st.balloons()
     
 if user_options==0:
-    for i in range(7):
+    for i in range(10):
         st.sidebar.text(' ')
         
 if user_options==0 or st.sidebar.button('Watch Demo GIF'):

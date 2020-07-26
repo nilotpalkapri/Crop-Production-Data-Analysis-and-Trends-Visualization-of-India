@@ -5,6 +5,7 @@ import numpy as np
 import folium # map rendering library
 import branca.colormap as cl
 from streamlit_folium import folium_static
+from folium.plugins import MarkerCluster
 
 c = 0
 def start(df2):
@@ -143,6 +144,8 @@ def start(df2):
                                    max_lon=np.max(data['longitude'])+50, 
                                    max_bounds=True,  
                                    tiles=map_tiles) #create a map with fetched coordinates of India
+            
+            #marker_cluster = MarkerCluster().add_to(map_india)
 
             # add markers to map
             for lat, lng, add, cr, pr in zip(data['latitude'], 
@@ -169,6 +172,7 @@ def start(df2):
             colormap = colormap.to_step(index=index)
             colormap.caption = cap
             colormap.add_to(map_india) #add lagend to show caption and varition of data range.
+            map_india.add_child(folium.LatLngPopup())
 
             with st.echo():
                 folium_static(map_india)

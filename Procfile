@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run app_main.py
+web: sh setup.sh && streamlit run CropProductionDataAnalysisandTrendsVisualizationofIndia.py

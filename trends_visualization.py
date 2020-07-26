@@ -8,8 +8,10 @@ import matplotlib.colors as colors
 import seaborn as sns; sns.set(color_codes=True)
 
 d = 0
+d2=0
 def start(df):
     global d
+    global d2
     def plot_with_seaborn(df_var,x_var,y_var):
         try:
             plt.figure(figsize=(12, 4))
@@ -51,9 +53,10 @@ def start(df):
     
     
     st.sidebar.subheader('Choose the States for which Production Trends to be visualized: ')
-    select_state = st.sidebar.multiselect('Please select as few as possible to get faster view!', 
+    select_state = [st.sidebar.selectbox('Please select as few as possible to get faster view!', 
                                          sorted([i for i in set(df['State_Name'])]), 
-                                         default=['West Bengal',]) 
+                                         index=len([i for i in set(df['State_Name'])])-1
+                                        )]
     
     user_df = df.loc[(df['State_Name'].isin(select_state))]
     
@@ -61,7 +64,7 @@ def start(df):
         st.sidebar.subheader('Select Crop: ')
         select_crop = st.sidebar.multiselect('Please select as few as possible to get faster view!', 
                                              sorted([i for i in set(user_df['Crop'])]), 
-                                             default=[[i for i in set(user_df['Crop'])][0],])
+                                             default=[sorted([i for i in set(user_df['Crop'])])[-1],])
         
         user_df = user_df.loc[(user_df['Crop'].isin(select_crop))]
         
@@ -113,6 +116,57 @@ def start(df):
         st.success('Success!')
         st.balloons()
 
+        
+    try:
+        st.sidebar.subheader('Additional Options:')
+        dist_opt = st.sidebar.radio('Want to See District Wise?', ['Yes','No'], index=1)
+        if dist_opt == 'Yes':
+            st.sidebar.subheader('Select District:')
+            select_dist = [st.sidebar.selectbox('Please select district to see trends!', 
+                                                sorted([i for i in set(user_df['District_Name'])]), 
+                                         index=len([i for i in set(user_df['District_Name'])])-1
+                                        )]
+            user_df = user_df.loc[(user_df['District_Name'].isin(select_dist))]
+        e2=0
+        
+    except:
+        e2=1
+        st.error('Please select at option.')
+    
+    
+    if (e2==0 and dist_opt == 'Yes') and (st.sidebar.button('Proceed to Plot District Data ⏩') or d2>0):
+        d2+=1
+        for i in select_dist: #process for all selected states
+            temp_df = user_df.copy()
+            temp_df = temp_df[temp_df.District_Name==i]
+            temp_df.drop(['Season'], axis = 1, inplace = True)
+            for j in select_crop: #process for all selected crops under each state
+                new_df = temp_df[['Crop_Year','Production','Area']][temp_df.Crop==j]
+                final_df = pd.DataFrame(columns=['Crop_Year','Total_Production','Total_Area','Total_Production/Area'])
+                for k in range(1997,2015): #make temporarily required dataframe
+                    try:
+                        total_prod = sum(new_df['Production'][new_df.Crop_Year==k])
+                        total_area = sum(new_df['Area'][new_df.Crop_Year==k])
+                        prod_per_area = total_prod/total_area
+                    except:
+                        total_prod = 0
+                        total_area = 0
+                        prod_per_area = 0
+                    final_df = final_df.append({'Crop_Year': k, 
+                                                'Total_Production': total_prod, 
+                                                'Total_Area': total_area, 
+                                                'Total_Production/Area': prod_per_area}, ignore_index=True)
+                #print(final_df)
+
+                plot_with_seaborn(final_df, 'Crop_Year', 'Total_Production')
+                plot_with_seaborn(final_df, 'Crop_Year', 'Total_Area')
+                plot_with_seaborn(final_df, 'Crop_Year', 'Total_Production/Area')
+                bar_plot(final_df, 'Crop_Year')
+                #scatter_plot_with_pyplot(final_df)
+        
+        st.success('Success!')
+        st.balloons()
+        
             
             
     if st.sidebar.checkbox('Show My Plot Data', False):
